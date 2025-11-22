@@ -1,1 +1,15 @@
+<div class="home">
+	<div class="home-card">
+		<h2>Bienvenido</h2>
+		<div *ngIf="user; else notLogged">
+			<img *ngIf="user.photoURL" [src]="user.photoURL" alt="avatar" class="avatar">
+			<p><strong>Nombre:</strong> {{user.displayName}}</p>
+			<p><strong>Email:</strong> {{user.email}}</p>
+			<button (click)="logout()">Cerrar sesión</button>
+		</div>
+		<ng-template #notLogged>
+			<p>No has iniciado sesión.</p>
+		</ng-template>
+	</div>
+</div>
 
