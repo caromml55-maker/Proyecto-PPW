@@ -1,9 +1,9 @@
 
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Auth } from '@angular/fire/auth';
-import { signOut } from 'firebase/auth';
+import { getAuth, signOut } from 'firebase/auth';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth';
 
 @Component({
   selector: 'app-home',
@@ -13,17 +13,18 @@ import { Router } from '@angular/router';
   styleUrls: ['./home.scss'],
 })
 export class Home implements OnInit {
-  constructor(private auth: Auth, private router: Router) {}
+  constructor(private router: Router, private auth: AuthService) {}
 
   user: any = null;
 
   ngOnInit(): void {
-    this.user = (this.auth as any).currentUser ?? null;
+    const auth = getAuth();
+    this.user = auth.currentUser ?? null;
   }
 
   async logout() {
     try {
-      await signOut(this.auth as any);
+      await this.auth.logout();
       this.router.navigate(['/login']);
     } catch (err) {
       console.error('Error closing session', err);
