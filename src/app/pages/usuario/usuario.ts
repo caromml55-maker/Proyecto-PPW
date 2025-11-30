@@ -2,11 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { getAuth } from 'firebase/auth';
 import { addDoc, collection, getDocs, getFirestore } from 'firebase/firestore';
+import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
+
 
 @Component({
   selector: 'app-usuario',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './usuario.html',
   styleUrls: ['./usuario.scss']
 })
@@ -19,7 +22,7 @@ export class Usuario implements OnInit {
   hora = "";
   comentario = "";
 
-  constructor() {}
+  constructor(private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit(){
     const auth = getAuth();
@@ -31,6 +34,8 @@ export class Usuario implements OnInit {
     this.programadores = snap.docs
       .map(d => ({ uid: d.id, ...d.data() }))
       .filter((u: any) => u.role === "programador");
+
+    this.cdRef.detectChanges();
   }
 
   async solicitar(){

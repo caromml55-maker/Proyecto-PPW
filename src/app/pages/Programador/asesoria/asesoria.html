@@ -1,1 +1,33 @@
-<p>asesoria works!</p>
+<div class="admin-page">
+
+  <header class="admin-header">
+    <div class="header-content">
+      <h1>Solicitudes de Asesoría</h1>
+    </div>
+  </header>
+
+  <div class="card-detail">
+
+    <div *ngIf="pendientes.length === 0">
+      <p>📭 No tienes solicitudes pendientes.</p>
+    </div>
+
+    <div *ngFor="let a of pendientes" class="asesoria-card">
+      
+      <h3>{{ a.usuarioNombre }}</h3>
+      <p>📅 {{ a.fecha }} — ⏰ {{ a.hora }}</p>
+      <p *ngIf="a.comentario">💬 "{{ a.comentario }}"</p>
+
+      <div class="action-buttons">
+
+        <button class="btn btn-success" (click)="responder(a,'aceptada')">✔️ Aceptar</button>
+        
+        <button class="btn btn-danger" (click)="responder(a,'rechazada')">❌ Rechazar</button>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+

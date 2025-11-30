@@ -8,16 +8,20 @@
     </div>
   </header>
 
-  <div class="admin-content">
+  <div class="admin-content container">
 
-    <!-- SELECTOR DE PROGRAMADOR -->
-    <label>Seleccionar programador:</label>
-    <select [(ngModel)]="selectedProgId" class="form-select">
-      <option value="">-- Selecciona --</option>
-      @for(p of programadores; track p.id){
-        <option [value]="p.id">{{ p.name }} ({{ p.email }})</option>
-      }
-    </select>
+    <div class="selector-container">
+
+      <!-- SELECTOR DE PROGRAMADOR -->
+      <label>Seleccionar programador:</label>
+      <select [(ngModel)]="selectedProgId" (change)="onProgramadorSelected()" class="form-select">
+        <option value="">-- Selecciona --</option>
+        @for(p of programadores; track p.id){
+          <option [value]="p.id">{{ p.name }} ({{ p.email }})</option>
+        }
+      </select>
+
+    </div>
 
     <br><br>
 
@@ -35,9 +39,29 @@
         <button class="btn btn-success" (click)="guardarHorario()">💾 Guardar horario</button>
       </div>
     </div>
-    <br><br>
-    <h2>Calendario del Programador</h2>
-    <full-calendar [events]="calendarEvents" [options]="calendarOptions"> </full-calendar>
+    
+   <!-- Información de horarios -->
+  <div class="calendar-section" *ngIf="selectedProgId">
+    <h2>Calendario de {{ getNombreProgramador() }}</h2>
+    
+    <div class="alert alert-info" *ngIf="horarios.length > 0">
+      📅 {{ horarios.length }} horario(s) registrado(s) - 
+      <small>Haz clic en un evento para eliminarlo</small>
+    </div>
+    
+    <div class="alert alert-warning" *ngIf="horarios.length === 0">
+      No hay horarios registrados para este programador
+    </div>
+
+    <div class="calendar-container">
+      <full-calendar [options]="calendarOptions"></full-calendar>
+    </div>
+  </div>
+
+    <!-- Mensaje cuando no hay programador seleccionado -->
+    <div *ngIf="!selectedProgId" class="alert alert-info">
+      👆 Selecciona un programador para gestionar sus horarios
+    </div>
 
 
   </div>

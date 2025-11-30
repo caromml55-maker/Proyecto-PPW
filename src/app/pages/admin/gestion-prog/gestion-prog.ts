@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { ProgramadorService } from '../../../services/programador.service';
 import { FormsModule } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-gestion-prog',
@@ -36,7 +37,9 @@ export class GestionProg implements OnInit {
     }
   };
    constructor(
-    private programadorService: ProgramadorService, private router: Router
+    private programadorService: ProgramadorService, 
+    private router: Router,
+    private cdRef: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -51,14 +54,12 @@ export class GestionProg implements OnInit {
     { dia: 'viernes', activo: false, horaInicio: '', horaFin: '' },
   ];
 
- 
-  
-
   async loadProgramadores() {
-     this.loading = true;
+    this.loading = true;
    try {
     this.programadores = await this.programadorService.getProgramadores();
     this.errorMsg = null;
+    this.cdRef.detectChanges();
     } catch (e) {
     console.error(e);
       this.errorMsg = 'No se pudieron cargar los programadores.';
@@ -66,27 +67,33 @@ export class GestionProg implements OnInit {
     }
     this.loading = false;
   }
+
   async onProgramadorSelected(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const uid = selectElement.value;
 
+  console.log(uid);
+  
   if (!uid) return;
 
-    this.selectedUid = uid; 
+  this.selectedUid = uid; 
   this.selectedProgramador = null; 
   this.isEditing = false; 
     
-    const prog = await this.programadorService.getProgramador(uid);
+  const prog = await this.programadorService.getProgramador(uid);
     
-    if (prog) {
-      this.selectedProgramador = prog;
-      this.formData = JSON.parse(JSON.stringify(prog));
+  if (prog) {
+    this.selectedProgramador = prog;
+    this.formData = JSON.parse(JSON.stringify(prog));
+
+    this.formData.name = this.formData.name ? this.formData.name : this.formData.displayName; 
       
-      if (!this.formData.redesSociales) {
-        this.formData.redesSociales = { github: '', linkedin: '', portfolio: '' };
-      }
+    if (!this.formData.redesSociales) {
+      this.formData.redesSociales = { github: '', linkedin: '', portfolio: '' };
     }
-    this.loading = false;
+    this.cdRef.detectChanges();
+  }
+  this.loading = false;
 }
 
 

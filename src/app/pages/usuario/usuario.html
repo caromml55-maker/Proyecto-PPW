@@ -12,7 +12,7 @@
     <select [(ngModel)]="uidProgramadorSeleccionado">
       <option value="">-- Seleccione --</option>
       <option *ngFor="let p of programadores" [value]="p.uid">
-        {{ p.name }} — {{ p.especialidad }}
+        {{ p.displayName }} — {{ p.especialidad }}
       </option>
     </select>
 

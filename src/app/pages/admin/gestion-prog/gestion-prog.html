@@ -24,12 +24,24 @@
         <!-- COMBOBOX (Solo aparece aquí) -->
         <div class="selector-container">
           <label for="selector">Seleccionar programador:</label>
-          <select id="selector" [(ngModel)]="selectedUid" (change)="onProgramadorSelected($event)" class="form-select">
-            <option value="" selected>-- Selecciona de la lista --</option>
+          <select id="selector" [(ngModel)]="selectedUid" (change)="onProgramadorSelected($event)" [disabled]="loading" class="form-select">
+            <option value="null" selected>-- Selecciona de la lista --</option>
             @for (p of programadores; track p.uid) {
               <option [value]="p.uid">{{ p.name }} ({{ p.email }})</option>
             }
           </select>
+
+          <!-- Spinner pequeño dentro del select cuando está loading -->
+          <div *ngIf="loading" class="select-loading-spinner">
+            <div class="spinner-border spinner-border-sm text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+
+          <!-- Error message -->
+          <div *ngIf="errorMsg" class="alert alert-danger mt-2">
+            {{ errorMsg }}
+          </div>
         </div>
 
         <!-- TARJETA DE INFORMACIÓN (Aparece al seleccionar) -->
