@@ -86,7 +86,7 @@
 
 /* TARJETA PROYECTO */
 .proyecto-card {
-  width: 260px;
+  width: 370px;
   min-height: 140px;
   background: #d8ffcc;
   border-radius: 12px;
@@ -103,6 +103,33 @@
     font-size: 1.6rem;
     font-weight: 600;
     color: #1a3d1a;
+  }
+
+  .ver-mas {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+.proyecto-cardL {
+  width: 370px;
+  min-height: 140px;
+  background: #c4fceb;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.25s;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  .nombre-proyecto {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #112d2e;
   }
 
   .ver-mas {
@@ -138,4 +165,55 @@
   align-items: center;
   gap: 8px;
   font-size: 1rem;
+}
+
+
+/* FORM GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  .full-row {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.proyecto-card, 
+.tarjeta-proyecto {
+  position: relative;
+}
+.detalle-expandido a {
+  word-break: break-all;
+  display: block;
+}
+
+.btn-delete {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+
+  &:hover {
+    opacity: 1;
+    color: red;
+  }
 }

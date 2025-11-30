@@ -51,47 +51,54 @@
           <label>Repositorio</label>
           <input type="text" [(ngModel)]="nuevoProyecto.urlRepositorio" placeholder="https://github.com/...">
         </div>
+        <div class="form-group full-row">
+            <label>Demo (Firebase / Vercel / Netlify)</label>
+            <input type="text" [(ngModel)]="nuevoProyecto.enlaceDemo" placeholder="https://midemo.vercel.app">
+        </div>
+
 
       </div>
 
       <div class="action-buttons">
+        <br>
         <button class="btn btn-success" (click)="guardarProyecto()">💾 Guardar</button>
+        <br>
         <button class="btn btn-secondary" (click)="creando=false">Cancelar</button>
       </div>
 
       <hr>
     </div>
 
+    <div *ngIf="!creando">
     <!-- ================= ACADÉMICOS ================= -->
-    <h2>Proyectos Académicos</h2>
+    <h2 class="section-title"> Proyectos Académicos</h2>
+    
+    <div class="separator"></div>
 
-    <div *ngIf="proyectosAcademicos.length === 0" class="no-project">
-      📁 Todavía no tienes proyectos académicos
-    </div>
-
-    <div class="proyectos-container" *ngIf="proyectosAcademicos.length > 0">
-      <div class="tarjeta-proyecto" *ngFor="let p of proyectosAcademicos">
-
-        <div class="nombre-proyecto">
-          {{ p.nombre }}
+        <div *ngIf="proyectosAcademicos.length === 0" class="no-proyectos">
+        📁 Todavía no tienes proyectos académicos
         </div>
 
-        <button class="btn-mostrar" (click)="p.expandido = true" *ngIf="!p.expandido">
-          mostrar más
-        </button>
+    <div class="proyectos-container" *ngIf="proyectosAcademicos.length > 0">
+      <div class="proyecto-card" *ngFor="let p of proyectosAcademicos">
+      <button class="btn-delete" (click)="eliminarProyecto(p, 'academico')" >🗑️</button>
+        <div class="nombre-proyecto">{{ p.nombre }}</div>
+        <div class="ver-mas" (click)="p.expandido = !p.expandido"> {{ p.expandido ? 'Cerrar' : 'Mostrar más' }}</div>
 
-        <div class="detalles" *ngIf="p.expandido">
-
+        <div *ngIf="p.expandido" class="detalle-expandido">
           <p><b>Descripción:</b> {{ p.descripcion }}</p>
           <p><b>Rol:</b> {{ p.tipoParticipacion }}</p>
           <p><b>Tecnologías:</b> {{ p.tecnologias }}</p>
           <p *ngIf="p.urlRepositorio">
-            <b>Repositorio:</b> <a [href]="p.urlRepositorio" target="_blank">{{ p.urlRepositorio }}</a>
+            <b>Repositorio:</b> 
+            <a [href]="p.urlRepositorio" target="_blank">{{ p.urlRepositorio }}</a>
           </p>
+          <p *ngIf="p.enlaceDemo">
+            <b>Demo:</b> 
+            <a [href]="p.enlaceDemo" target="_blank">{{ p.enlaceDemo }}</a>
+         </p>
 
-          <button class="btn-ocultar" (click)="p.expandido = false">
-            cerrar
-          </button>
+
         </div>
 
       </div>
@@ -100,21 +107,18 @@
 
     <!-- ================= LABORALES ================= -->
     <h2 class="section-title">Proyectos Laborales</h2>
-
-    <div *ngIf="proyectosLaborales.length === 0" class="no-project">
+    <div class="separator"></div>
+    <div *ngIf="proyectosLaborales.length === 0" class="no-proyectos">
       👜 Todavía no tienes proyectos laborales
     </div>
 
     <div class="proyectos-container" *ngIf="proyectosLaborales.length > 0">
-      <div class="tarjeta-proyecto" *ngFor="let p of proyectosLaborales">
+      <div class="proyecto-cardL" *ngFor="let p of proyectosLaborales">
+        <button class="btn-delete" (click)="eliminarProyecto(p, 'laboral')" >🗑️</button>
+        <div class="nombre-proyecto">{{ p.nombre }}</div>
+        <div class="ver-mas" (click)="p.expandido = !p.expandido"> {{ p.expandido ? 'Cerrar' : 'Mostrar más' }}</div>
 
-        <div class="nombre-proyecto">
-          {{ p.nombre }}
-        </div>
-
-        <button class="btn-mostrar" (click)="p.expandido = true" *ngIf="!p.expandido"> mostrar más</button>
-
-        <div class="detalles" *ngIf="p.expandido">
+        <div class="detalle-expandido" *ngIf="p.expandido">
 
           <p><b>Descripción:</b> {{ p.descripcion }}</p>
           <p><b>Rol:</b> {{ p.tipoParticipacion }}</p>
@@ -122,10 +126,10 @@
           <p *ngIf="p.urlRepositorio">
             <b>Repositorio:</b> <a [href]="p.urlRepositorio" target="_blank">{{ p.urlRepositorio }}</a>
           </p>
-
-          <button class="btn-ocultar" (click)="p.expandido = false">
-            cerrar
-          </button>
+          <p *ngIf="p.enlaceDemo">
+            <b>Demo:</b> 
+            <a [href]="p.enlaceDemo" target="_blank">{{ p.enlaceDemo }}</a>
+         </p>
         </div>
 
       </div>
@@ -133,5 +137,5 @@
 
   </div>
 </div>
-
+</div>
 <router-outlet></router-outlet>

@@ -17,7 +17,6 @@ export class Lab implements OnInit{
   proyectosAcademicos: any[] = [];
   proyectosLaborales: any[] = [];
 
-  mostrarFormulario = false;
   uidUsuario = "";
 
   nuevoProyecto = {
@@ -26,7 +25,8 @@ export class Lab implements OnInit{
     descripcion: '',
     tipoParticipacion: '',
     tecnologias: '',
-    urlRepositorio: ''
+    urlRepositorio: '',
+    enlaceDemo: ''
   };
   creando = false;
 
@@ -55,13 +55,19 @@ async cargarPortafolio() {
   if (!snap.empty) {
     const info = snap.docs[0].data() as any;
 
-    this.proyectosAcademicos = (info.proyectosAcademicos || []).map((p: any) => ({
+    this.proyectosAcademicos = (info.proyectosAcademicos || [])
+    .filter((p: any) => p && p.nombre && p.nombre.trim() !== "") 
+    .map((p: any) => ({
       ...p,
+      enlaceDemo: p.enlaceDemo || "",
       expandido: false
     }));
 
-    this.proyectosLaborales = (info.proyectosLaborales || []).map((p: any) => ({
+    this.proyectosLaborales = (info.proyectosLaborales || [])
+    .filter((p: any) => p && p.nombre && p.nombre.trim() !== "") 
+    .map((p: any) => ({
       ...p,
+      enlaceDemo: p.enlaceDemo || "",
       expandido: false
     }));
 
@@ -80,7 +86,7 @@ async cargarPortafolio() {
     const q = query(ref, where('uidProgramador', '==', this.uidUsuario));
     const snap = await getDocs(q);
 
-    const proyecto = { ...this.nuevoProyecto };
+    const proyecto = { ...this.nuevoProyecto,  expandido: false };
 
     if (snap.empty) {
       await addDoc(ref, {
@@ -107,7 +113,7 @@ async cargarPortafolio() {
     }
 
 
-    this.mostrarFormulario = false;
+    this.creando = false;
 
     this.nuevoProyecto = {
       tipo: 'academico',
@@ -115,11 +121,44 @@ async cargarPortafolio() {
       descripcion: '',
       tipoParticipacion: '',
       tecnologias: '',
-      urlRepositorio: ''
+      urlRepositorio: '',
+      enlaceDemo: ''
     };
 
     await this.cargarPortafolio();
   }
+
+  cancelarCreacion() {
+  this.creando = false;
+  }
+
+  async eliminarProyecto(proyecto: any, tipo: string) {
+
+  if (!confirm("¿Seguro que deseas eliminar este proyecto?")) return;
+
+  const db = getFirestore();
+  const ref = collection(db, 'portafolios');
+  const q = query(ref, where('uidProgramador', '==', this.uidUsuario));
+  const snap = await getDocs(q);
+
+  if (!snap.empty) {
+    const docRef = snap.docs[0].ref;
+    const data: any = snap.docs[0].data();
+
+    if (tipo === 'academico') {
+      const nuevos = data.proyectosAcademicos.filter((p: any) => p.nombre !== proyecto.nombre);
+      await updateDoc(docRef, { proyectosAcademicos: nuevos });
+    }
+
+    if (tipo === 'laboral') {
+      const nuevos = data.proyectosLaborales.filter((p: any) => p.nombre !== proyecto.nombre);
+      await updateDoc(docRef, { proyectosLaborales: nuevos });
+    }
+  }
+
+  await this.cargarPortafolio();
+}
+
 
 
 }

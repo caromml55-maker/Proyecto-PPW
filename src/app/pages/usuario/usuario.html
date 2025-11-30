@@ -1,22 +1,35 @@
-<div class="dashboard usuario">
-  <h2>Bienvenido al Explorador de Portafolios</h2>
+<div class="admin-page">
+  <header class="admin-header">
+    <div class="header-content">
+      <h1>Agendar Asesoría</h1>
+    </div>
+  </header>
 
-  <p *ngIf="user">Hola {{ user.displayName }}</p>
+  <div class="card-detail">
 
-  <div class="cards">
-    <div class="card">
-      <h3>Programadores Disponibles</h3>
-      <p>Explorar perfiles profesionales.</p>
+    <!-- Seleccionar programador -->
+    <label>Programador:</label>
+    <select [(ngModel)]="uidProgramadorSeleccionado">
+      <option value="">-- Seleccione --</option>
+      <option *ngFor="let p of programadores" [value]="p.uid">
+        {{ p.name }} — {{ p.especialidad }}
+      </option>
+    </select>
+
+    <!-- Fecha y hora -->
+    <label>Fecha:</label>
+    <input type="date" [(ngModel)]="fecha">
+
+    <label>Hora:</label>
+    <input type="time" [(ngModel)]="hora">
+
+    <!-- Comentario opcional -->
+    <label>Motivo de la asesoría:</label>
+    <textarea [(ngModel)]="comentario" rows="3"></textarea>
+
+    <div class="action-buttons">
+      <button class="btn btn-success" (click)="solicitar()">📩 Enviar solicitud</button>
     </div>
 
-    <div class="card">
-      <h3>Agendar Asesoría</h3>
-      <p>Elegir programador, fecha y motivo.</p>
-    </div>
-
-    <div class="card">
-      <h3>Mis Solicitudes</h3>
-      <p>Revisar estado de mis asesorías.</p>
-    </div>
   </div>
 </div>

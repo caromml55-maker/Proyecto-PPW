@@ -3,10 +3,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDoc,updateDoc } from "firebase/firestore";
+import { RouterModule } from "@angular/router";
 
 @Component({
   selector: 'app-academic',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   standalone: true,
   templateUrl: './academic.html',
   styleUrl: './academic.scss',
