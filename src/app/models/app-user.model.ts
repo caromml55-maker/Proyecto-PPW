@@ -1,10 +1,19 @@
+export interface AvailabilitySlot {
+  day: string;     
+  from: string;    
+  to: string;     
+}
+
 export interface AppUser {
-  uid: string;
-  nombre?: string;
-  correo?: string;
-  foto?: string;
-  rol?: 'Admin' | 'Programador' | 'Usuario';
-  especialidad?: string;
-  descripcion?: string;
-  redes?: { [key: string]: string };
+  name: string;
+  email: string;
+  role: 'admin' | 'programmer' | 'user' | string;
+  photoURL?: string;
+  specialty?: string;           
+  description?: string;         
+  contactLinks?: string[];      
+  socialLinks?: string[];       
+  availability?: AvailabilitySlot[]; 
+  createdAt?: any;
+  updatedAt?: any;
 }

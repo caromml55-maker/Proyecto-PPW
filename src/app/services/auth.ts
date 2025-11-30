@@ -18,7 +18,7 @@ export class AuthService {
       if (code === 'auth/cancelled-popup-request' || code === 'auth/popup-blocked' || code === 'auth/popup-closed-by-user') {
         try {
           await signInWithRedirect(auth, provider);
-          return null; // redirect will navigate away
+          return null;
         } catch (e) {
           console.error('Redirect login failed', e);
           throw e;
@@ -38,18 +38,20 @@ export class AuthService {
       const newUser: AppUser = {
         name: firebaseUser.displayName || '',
         email: firebaseUser.email || '',
-        role: 'programmer',
+        role: 'programador',
       };
-      await setDoc(ref, { ...newUser, lastLogin: serverTimestamp() });
+      await setDoc(ref, newUser);
       return newUser;
     }
-    await setDoc(ref, { lastLogin: serverTimestamp() }, { merge: true });
+    
     const data = snap.data() as any;
     return {
       name: data.name || data.nombre || '',
       email: data.email || data.correo || '',
       role: data.role || data.rol || 'user',
     } as AppUser;
+
+
   }
 
   logout() {

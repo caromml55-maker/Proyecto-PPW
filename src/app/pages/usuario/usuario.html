@@ -1,1 +1,22 @@
-<p>usuario works!</p>
+<div class="dashboard usuario">
+  <h2>Bienvenido al Explorador de Portafolios</h2>
+
+  <p *ngIf="user">Hola {{ user.displayName }}</p>
+
+  <div class="cards">
+    <div class="card">
+      <h3>Programadores Disponibles</h3>
+      <p>Explorar perfiles profesionales.</p>
+    </div>
+
+    <div class="card">
+      <h3>Agendar Asesoría</h3>
+      <p>Elegir programador, fecha y motivo.</p>
+    </div>
+
+    <div class="card">
+      <h3>Mis Solicitudes</h3>
+      <p>Revisar estado de mis asesorías.</p>
+    </div>
+  </div>
+</div>

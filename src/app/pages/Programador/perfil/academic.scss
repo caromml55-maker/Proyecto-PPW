@@ -1,0 +1,173 @@
+.admin-page {
+  padding: 20px;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* HEADER */
+.admin-header {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 { 
+      margin: 0; 
+      font-size: 1.6rem; 
+      color: #2c3e50; 
+      font-weight: 600;
+    }
+  }
+  .header-actions { display: flex; gap: 10px; }
+}
+
+/* TARJETA PERFIL */
+.card-detail {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  max-width: 900px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* FOTO */
+.photo-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+
+  img.profile-img-lg {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #007bff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+  }
+}
+
+/* INPUT GRID */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+
+  .full-row {
+    grid-column: 1 / -1;
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+    font-size: 0.95rem;
+  }
+
+  input, textarea {
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 4px rgba(0,123,255,0.3);
+    }
+
+    &:disabled {
+      background-color: #eef1f5;
+      color: #555;
+      cursor: not-allowed;
+    }
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  .section-label {
+    color: #007bff;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+}
+
+.social-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* PLACEHOLDER TEXTOS */
+input::placeholder,
+textarea::placeholder {
+  color: #adb5bd;
+}
+
+/* BOTONES */
+.action-buttons {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f1f1;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  transition: all 0.15s ease-in-out;
+
+  &:active { transform: scale(0.98); }
+  &:hover { filter: brightness(1.07); }
+}
+
+.btn-secondary { background-color: #6c757d; }
+.btn-success   { background-color: #198754; }
+.btn-warning   { background-color: #ffc107; color: #000; }
+
+/* RESPONSIVE para móviles */
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .card-detail {
+    padding: 25px;
+  }
+
+  .photo-center img.profile-img-lg {
+    width: 120px;
+    height: 120px;
+  }
+
+  .header-content h1 {
+    font-size: 1.3rem;
+  }
+}

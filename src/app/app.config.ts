@@ -10,7 +10,5 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes), provideClientHydration(withEventReplay()),
-    // Firebase is initialized in `main.ts` using the Firebase JS SDK.
-    // If you later add @angular/fire schematics, you can re-enable providers here.
   ]
 };

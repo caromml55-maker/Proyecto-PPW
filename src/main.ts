@@ -3,6 +3,7 @@ import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { initializeApp, getApps } from 'firebase/app';
 import { environment } from './environments/environment';
+import { FullCalendarModule } from '@fullcalendar/angular';
 
 // Ensure Firebase app is initialized before Angular bootstraps.
 if (!getApps().length) {

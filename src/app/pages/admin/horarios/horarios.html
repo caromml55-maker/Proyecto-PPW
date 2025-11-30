@@ -1,0 +1,44 @@
+<div class="admin-page">
+  <header class="admin-header">
+    <div class="header-content">
+      <h1>Registro de Disponibilidad</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" routerLink="/admin1">🏠 Inicio</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-content">
+
+    <!-- SELECTOR DE PROGRAMADOR -->
+    <label>Seleccionar programador:</label>
+    <select [(ngModel)]="selectedProgId" class="form-select">
+      <option value="">-- Selecciona --</option>
+      @for(p of programadores; track p.id){
+        <option [value]="p.id">{{ p.name }} ({{ p.email }})</option>
+      }
+    </select>
+
+    <br><br>
+
+    <div class="form-grid" *ngIf="selectedProgId">
+      <label>Fecha:</label>
+      <input type="date" [(ngModel)]="fecha">
+
+      <label>Hora inicio:</label>
+      <input type="time" [(ngModel)]="horaInicio">
+
+      <label>Hora fin:</label>
+      <input type="time" [(ngModel)]="horaFin">
+
+      <div class="action-buttons">
+        <button class="btn btn-success" (click)="guardarHorario()">💾 Guardar horario</button>
+      </div>
+    </div>
+    <br><br>
+    <h2>Calendario del Programador</h2>
+    <full-calendar [events]="calendarEvents" [options]="calendarOptions"> </full-calendar>
+
+
+  </div>
+</div>

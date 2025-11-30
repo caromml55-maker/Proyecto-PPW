@@ -1,0 +1,72 @@
+<div class="admin-page">
+  <header class="admin-header">
+    <div class="header-content">
+      <h1>Mi Perfil Profesional</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" routerLink="/programador1">🏠 Inicio</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="card-detail">
+
+    <!-- FOTO -->
+    <div class="photo-center">
+      <img 
+        [src]="data.photoURL || 'https://ui-avatars.com/api/?name=' + (data.displayName || data.name || 'Usuario')" 
+        class="profile-img-lg" />
+    </div>
+
+    <div class="form-grid">
+
+      <!-- NOMBRE -->
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" [(ngModel)]="data.name" [disabled]="!isEditing">
+      </div>
+
+      <!-- ESPECIALIDAD -->
+      <div class="form-group">
+        <label>Especialidad</label>
+        <input type="text" [(ngModel)]="data.especialidad" [disabled]="!isEditing">
+      </div>
+
+      <!-- CONTACTO -->
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="text" [(ngModel)]="data.telefono" placeholder="099 999 9999" [disabled]="!isEditing">
+      </div>
+
+      <!-- EMAIL -->
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="data.email" [disabled]="true">
+      </div>
+
+      <!-- REDES SOCIALES -->
+      <div class="form-group full-row">
+        <label class="section-label">Redes Sociales</label>
+
+        <div class="social-inputs">
+          <input type="text" [(ngModel)]="data.redesSociales.github" placeholder="gitHub URL" [disabled]="!isEditing">
+          <input type="text" [(ngModel)]="data.redesSociales.linkedin" placeholder="LinkedIn URL" [disabled]="!isEditing">
+          <input type="text" [(ngModel)]="data.redesSociales.portfolio" placeholder="Portafolio URL" [disabled]="!isEditing">
+        </div>
+      </div>
+
+      <!-- DESCRIPCIÓN -->
+      <div class="form-group full-row">
+        <label>Descripción profesional</label>
+        <textarea rows="4" [(ngModel)]="data.descripcion" [disabled]="!isEditing"></textarea>
+      </div>
+    </div>
+
+    <!-- BOTONES -->
+    <div class="action-buttons">
+      <button *ngIf="!isEditing" class="btn btn-warning" (click)="isEditing=true">✏️ Editar</button>
+      <button *ngIf="isEditing" class="btn btn-success" (click)="guardar()">💾 Guardar</button>
+      <button *ngIf="isEditing" class="btn btn-secondary" (click)="cancel()">Cancelar</button>
+    </div>
+
+  </div>
+</div>

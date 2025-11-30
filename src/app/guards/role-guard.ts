@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth';
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
-import { from, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ export class RoleGuard implements CanActivate {
   ) {}
 
   async canActivate(route: ActivatedRouteSnapshot) {
-    const expectedRoles = route.data['roles'];
+    const expectedRoles = route.data['role'];
 
     const asyncUser = await this.auth.getCurrentUser();
     if (!asyncUser) {

@@ -1,0 +1,177 @@
+.admin-page {
+  padding: 20px;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.admin-header {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h1 { margin: 0; font-size: 1.6rem; color: #2c3e50; }
+  }
+  .header-actions { display: flex; gap: 10px; }
+}
+
+/* Selector Combobox */
+.selector-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  
+  label { font-weight: bold; display: block; margin-bottom: 8px; color: #555; }
+  select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #fff;
+  }
+}
+
+/* Tarjetas (Detalle y Crear) */
+.card-detail, .create-section {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Foto centrada */
+.photo-center {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  
+  .profile-img-lg {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .no-photo-placeholder {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+}
+
+.preview-box { margin-top: 10px; }
+.preview-mini {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
+}
+
+/* Grid del Formulario */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columnas */
+  gap: 25px;
+  
+  .full-row {
+    grid-column: 1 / -1; /* Ocupa todo el ancho */
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  
+  label {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+    font-size: 0.95rem;
+  }
+  
+  input, textarea {
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+    
+    &:focus {
+      outline: none;
+      border-color: #007bff;
+    }
+    
+    &:disabled {
+      background-color: #e9ecef;
+      color: #495057;
+      cursor: default;
+    }
+  }
+  
+  .section-label {
+    color: #007bff;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    margin-top: 10px;
+  }
+}
+
+.social-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Botones */
+.action-buttons {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f1f1f1;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  transition: transform 0.1s, box-shadow 0.2s;
+  
+  &:active { transform: scale(0.98); }
+}
+
+.btn-primary { background-color: #0d6efd; }
+.btn-secondary { background-color: #6c757d; }
+.btn-success { background-color: #198754; }
+.btn-warning { background-color: #ffc107; color: #000; }
+.btn-danger { background-color: #dc3545; }

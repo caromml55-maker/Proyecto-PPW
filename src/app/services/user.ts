@@ -14,7 +14,6 @@ export class UserService {
       if (user) {
         const db = getFirestore();
         const ref = doc(db, `users/${user.uid}`);
-        // detach previous
         if (this.unsubSnapshot) this.unsubSnapshot();
         this.unsubSnapshot = onSnapshot(ref, (snap) => {
           this.currentUser = snap.exists() ? (snap.data() as AppUser) : null;

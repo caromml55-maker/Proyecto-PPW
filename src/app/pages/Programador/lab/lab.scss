@@ -1,0 +1,141 @@
+.admin-page {
+  padding: 20px;
+  background-color: #f4f6f9;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* HEADER */
+.admin-header {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 12px;
+  }
+}
+
+/* BOTONES */
+.btn {
+  padding: 10px 22px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: transform 0.1s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.btn-secondary { background: #6c757d; color: #fff; }
+.btn-success { background: #198754; color: #fff; }
+.btn-danger { background: #dc3545; color: #fff; }
+.btn-primary { background: #0d6efd; color: #fff; }
+
+/* TARJETA CON PROYECTOS */
+.card-detail {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+/* TÍTULOS DE SECCIÓN */
+.section-title {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+.separator {
+  height: 2px;
+  background: #222;
+  margin-bottom: 25px;
+}
+
+/* LISTA DE TARJETAS */
+.proyectos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* TARJETA PROYECTO */
+.proyecto-card {
+  width: 260px;
+  min-height: 140px;
+  background: #d8ffcc;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.25s;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  .nombre-proyecto {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #1a3d1a;
+  }
+
+  .ver-mas {
+    margin-top: 12px;
+    font-size: 0.95rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+/* DETALLE EXPANDIDO */
+.detalle-expandido {
+  background: #eafff2;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 15px;
+  animation: abrir 0.2s ease-out;
+  border-left: 4px solid #198754;
+}
+
+@keyframes abrir {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* MENSAJE SIN PROYECTOS */
+.no-proyectos {
+  background: #e6f7ff;
+  border-radius: 10px;
+  padding: 15px;
+  color: #00507a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}

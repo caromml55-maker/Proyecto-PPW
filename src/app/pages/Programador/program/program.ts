@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { getAuth } from 'firebase/auth';
+import { RouterModule } from "@angular/router";
 
 @Component({
-  selector: 'app-usuario',
+  selector: 'app-program',
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './usuario.html',
-  styleUrls: ['./usuario.scss']
+  imports: [CommonModule, RouterModule],
+  templateUrl: './program.html',
+  styleUrls: ['./program.scss']
 })
-export class Usuario implements OnInit {
+export class Program implements OnInit {
   user: any = null;
 
   ngOnInit(): void {

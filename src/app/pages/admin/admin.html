@@ -1,1 +1,14 @@
-<p>admin works!</p>
+<div class="admin-container">
+
+  <h1>Panel de Administrador</h1>
+  <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+  <br>
+  <hr>
+  <nav class="menu">
+    <a routerLink="/gestProg" routerLinkActive="active"> Programadores</a> |
+    <a routerLink="/horarios" routerLinkActive="active"> Horarios</a> 
+  </nav>
+
+  <p> Bienvenido a su gestión</p>
+<router-outlet></router-outlet> 
+</div>
