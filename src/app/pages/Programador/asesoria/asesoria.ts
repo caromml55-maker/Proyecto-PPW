@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { getAuth } from 'firebase/auth';
 import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from 'firebase/firestore';
 import { RouterLink, RouterOutlet } from "@angular/router";
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-asesoria',
@@ -15,44 +16,48 @@ export class Asesoria implements OnInit {
 
   pendientes: any[] = [];
   uidProgramador = "";
+  loading = false;
 
-  constructor(){}
+  constructor(private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit() {
-  const auth = getAuth();
-  this.uidProgramador = auth.currentUser?.uid || "";
+    this.loading = true;
+    const auth = getAuth();
+    this.uidProgramador = auth.currentUser?.uid || "";
 
-  const db = getFirestore();
+    const db = getFirestore();
 
-  // 👉 1. obtenemos asesorías
-  const snapA = await getDocs(collection(db, "asesorias"));
+    // 👉 1. obtenemos asesorías
+    const snapA = await getDocs(collection(db, "asesorias"));
 
-  let asesorias = snapA.docs
-    .map((d: any) => ({ id: d.id, ...d.data() as any }))
-    .filter((a: any) =>
-      a.programadorId === this.uidProgramador &&
-      a.estado === "pendiente"
-    );
+    let asesorias = snapA.docs
+      .map((d: any) => ({ id: d.id, ...d.data() as any }))
+      .filter((a: any) =>
+        a.programadorId === this.uidProgramador &&
+        a.estado === "pendiente"
+      );
 
-  // 👉 2. obtenemos usuarios
-  const snapUsers = await getDocs(collection(db, "users"));
-  const users = snapUsers.docs.map((d: any) => ({
-    id: d.id,
-    ...d.data() as any
-  }));
+    // 👉 2. obtenemos usuarios
+    const snapUsers = await getDocs(collection(db, "users"));
+    const users = snapUsers.docs.map((d: any) => ({
+      id: d.id,
+      ...d.data() as any
+    }));
 
-  // 👉 3. combinamos usuario + asesoría
-  this.pendientes = asesorias.map((a: any) => {
-    const u = users.find((x: any) => x.uid === a.usuarioId);
+    // 👉 3. combinamos usuario + asesoría
+    this.pendientes = asesorias.map((a: any) => {
+      const u = users.find((x: any) => x.uid === a.usuarioId);
 
-    return {
-      ...a,
-      usuarioNombre: u?.displayName || u?.name || u?.nombre || "Usuario desconocido",
-      fecha: a.fechaHora?.substring(0, 10) || "",
-      hora: a.fechaHora?.substring(11, 16) || ""
-    };
-  });
-}
+      return {
+        ...a,
+        usuarioNombre: u?.displayName || u?.name || u?.nombre || "Usuario desconocido",
+        fecha: a.fechaHora?.substring(0, 10) || "",
+        hora: a.fechaHora?.substring(11, 16) || ""
+      };
+    });
+    this.loading = false;
+    this.cdRef.detectChanges();
+  }
 
 
   async responder(a: any, nuevaRespuesta: string) {

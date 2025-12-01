@@ -161,10 +161,14 @@ import { RouterModule } from "@angular/router";
         fin: this.horaFin
       });
 
-      this.calendarEvents.push({
-      title: "Disponible",
-      date: this.fecha
-      });
+      this.horarios.push({
+        fecha: this.fecha,
+        fin: this.horaFin,
+        inicio: this.horaInicio,
+        programadorId: this.selectedProgId
+      })
+
+      this.actualizarEventosCalendario();
 
       alert("Horario guardado correctamente");
 
