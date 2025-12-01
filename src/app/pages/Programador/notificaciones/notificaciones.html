@@ -1,4 +1,29 @@
-<h1>Notificaciones !</h1>
-    
-<br>    
-  <button routerLink="/admin1">Regresar</button>
+<div class="notif-page">
+
+  <header class="notif-header">
+    <h2>📨 Notificaciones</h2>
+    <button class="btn-inicio" routerLink="/admin1">🏠 Inicio</button>
+  </header>
+
+  <div class="notif-container">
+
+    <div *ngIf="lista.length === 0" class="sin-notis">
+      <p>📭 No tienes notificaciones</p>
+    </div>
+
+    <div *ngFor="let n of lista" 
+         class="notif-item" 
+         [class.leido]="n.leido">
+
+      <p class="msg">{{ n.mensaje }}</p>
+      <small class="fecha">{{ n.fechaHora }}</small>
+
+      <button *ngIf="!n.leido" class="btn-leer" 
+              (click)="marcarLeido(n)">Marcar como leído</button>
+    </div>
+
+  </div>
+
+</div>
+
+<router-outlet></router-outlet>

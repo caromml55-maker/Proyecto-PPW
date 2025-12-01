@@ -21,6 +21,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 export class Usuario implements OnInit {
   programadores: any[] = [];
   seleccionado: any = null;
+  notificaciones: any[] = [];
 
   eventosCalendar: any[] = [];
   horaSeleccionada = "";
@@ -36,6 +37,7 @@ export class Usuario implements OnInit {
     setTimeout(async () => {
     await this.cargarUsuario();
     await this.cargarProgramadores();
+    await this.cargarNotificaciones(); 
   }, 200);
 }
 
@@ -50,14 +52,42 @@ async cargarProgramadores(){
   const ref = collection(db, "users");
   const snap = await getDocs(ref);
 
-  this.programadores = snap.docs
-    .map(d => ({id: d.id, ...d.data()}))
-    .filter((u:any) => u.role === "programador");
+  this.programadores = snap.docs.map(d => {
+    const data = d.data();
+
+    return {
+      idDoc: d.id,          
+      uid: data['uid'],        
+      name: data['displayName'] || data['name'] || "",
+      especialidad: data['especialidad'] || "",
+      photoURL: data['photoURL'] || "",
+      role:  data['role']
+    };
+  }).filter((u:any) => u.role === "programador");
 }
+
+async cargarNotificaciones(){
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const db = getFirestore();
+  const ref = collection(db, "notifications");
+  const q = query(ref, where("usuarioId", "==", user.uid));
+  const snap = await getDocs(q);
+
+  this.notificaciones = snap.docs.map(d => ({
+    id: d.id,
+    ...d.data()
+  }));
+}
+
+
+
 
 verAsesoria(programador: any){
   this.seleccionado = programador;
-  this.cargarHorarios(programador.id);
+  this.cargarHorarios(programador.uid);
 }
 
 volver(){
@@ -117,11 +147,18 @@ async agendarAsesoria(){
   const db = getFirestore();
 
   await addDoc(collection(db, "asesorias"), {
-    programadorId: this.seleccionado.id,
+    programadorId: this.seleccionado.uid,
     usuarioId: user?.uid,
     fechaHora: this.horaSeleccionada,
     comentario: this.comentario,
     estado: "pendiente"
+  });
+
+  await addDoc(collection(db, "notifications"), {
+    usuarioId: this.seleccionado.id,   
+    mensaje: `📩 Nueva solicitud de asesoría de ${this.userName}`,
+    fechaHora: new Date().toISOString(),
+    leido: false
   });
 
   this.eventosCalendar = this.eventosCalendar.map(e => {
@@ -135,6 +172,7 @@ async agendarAsesoria(){
     }
     return e;
   });
+
 
   this.actualizarCalendario();
 

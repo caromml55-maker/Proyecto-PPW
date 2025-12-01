@@ -1,0 +1,98 @@
+.notif-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px 30px;
+  background-color: #fdfdfd;
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.notif-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+
+  h2 {
+    color: #2c3e50;
+    margin: 0;
+    font-weight: 700;
+    font-size: 24px;
+  }
+
+  .btn-inicio {
+    background-color: #3498db;
+    color: white;
+    padding: 9px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+  }
+}
+
+.notif-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sin-notis {
+  text-align: center;
+  font-size: 16px;
+  color: #555;
+}
+
+.notif-item {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 14px 18px;
+  border-left: 4px solid #0d6efd;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.01);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+  }
+
+  &.leido {
+    border-left-color: #999;
+    opacity: .65;
+  }
+
+  .msg {
+    font-size: 15px;
+    color: #2c3e50;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .fecha {
+    font-size: 13px;
+    color: #7f8c8d;
+  }
+
+  .btn-leer {
+    margin-top: 12px;
+    background-color: #2ecc71;
+    border: none;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &:hover {
+      background-color: #27ae60;
+      transform: translateY(-2px);
+    }
+  }
+}

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { getAuth } from 'firebase/auth';
-import { collection, doc, getDocs, getFirestore, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from 'firebase/firestore';
+import { RouterLink, RouterOutlet } from "@angular/router";
 
 @Component({
   selector: 'app-asesoria',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, RouterOutlet],
   standalone: true,
   templateUrl: './asesoria.html',
   styleUrl: './asesoria.scss',
@@ -42,7 +43,7 @@ export class Asesoria implements OnInit {
 
   // 👉 3. combinamos usuario + asesoría
   this.pendientes = asesorias.map((a: any) => {
-    const u = users.find((x: any) => x.id === a.usuarioId);
+    const u = users.find((x: any) => x.uid === a.usuarioId);
 
     return {
       ...a,
@@ -65,9 +66,24 @@ export class Asesoria implements OnInit {
           : "El programador ha rechazado tu asesoría "
     });
 
+      await addDoc(collection(db, "notifications"), {
+        usuarioId: a.usuarioId,
+        mensaje: nuevaRespuesta === "aceptada"
+          ? `✔️ Tu asesoría fue aceptada por ${this.getProgramadorNombre()}`
+          : `❌ Tu asesoría fue rechazada por ${this.getProgramadorNombre()}`,
+        fechaHora: new Date().toISOString(),
+        leido: false
+      });
+
+
     alert("Respuesta enviada");
 
     this.ngOnInit();
   }
+  getProgramadorNombre():string {
+  const auth = getAuth();
+  return auth.currentUser?.displayName || "Programador";
+}
+
 
 }

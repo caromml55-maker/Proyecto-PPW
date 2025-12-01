@@ -2,32 +2,45 @@
 
   <header class="admin-header">
     <div class="header-content">
-      <h1>Solicitudes de Asesoría</h1>
+      <h1>📨 Solicitudes de Asesoría</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" routerLink="/programador1">🏠 Inicio</button>
+      </div>
     </div>
   </header>
 
   <div class="card-detail">
 
-    <div *ngIf="pendientes.length === 0">
+    <div *ngIf="pendientes.length === 0" class="no-requests">
       <p>📭 No tienes solicitudes pendientes.</p>
     </div>
 
-    <div *ngFor="let a of pendientes" class="asesoria-card">
-      
-      <h3>{{ a.usuarioNombre }}</h3>
-      <p>📅 {{ a.fecha }} — ⏰ {{ a.hora }}</p>
-      <p *ngIf="a.comentario">💬 "{{ a.comentario }}"</p>
+    <<div *ngFor="let a of pendientes" class="asesoria-card">
+
+      <div class="asesoria-header-card">
+        <div class="user-info">
+          <div class="user-circle">
+            {{ a.usuarioNombre.charAt(0) }}
+          </div>
+          <div class="info">
+            <h3>{{ a.usuarioNombre }}</h3>
+            <p class="coment" *ngIf="a.comentario">💬 "{{ a.comentario }}"</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="date-info">
+        <span>📅 {{ a.fecha }}</span>
+        <span>⏰ {{ a.hora }}</span>
+      </div>
 
       <div class="action-buttons">
-
-        <button class="btn btn-success" (click)="responder(a,'aceptada')">✔️ Aceptar</button>
-        
-        <button class="btn btn-danger" (click)="responder(a,'rechazada')">❌ Rechazar</button>
-
+        <button class="btn-aceptar" (click)="responder(a,'aceptada')">✔ Aceptar</button>
+        <button class="btn-rechazar" (click)="responder(a,'rechazada')">✖ Rechazar</button>
       </div>
 
     </div>
 
   </div>
 </div>
-
+<router-outlet></router-outlet>

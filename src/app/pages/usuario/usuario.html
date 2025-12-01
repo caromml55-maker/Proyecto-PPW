@@ -7,6 +7,13 @@
     </div>
   </header>
 
+    <div *ngIf="notificaciones.length > 0" class="notificacion-box">
+      <div class="noti" *ngFor="let n of notificaciones">
+        {{ n.mensaje }}
+      </div>
+    </div>
+
+
   <div *ngIf="!seleccionado" class="vista-programadores">
 
     <h3 class="title">Explorar programadores</h3>
