@@ -1,35 +1,59 @@
-<div class="admin-page">
-  <header class="admin-header">
-    <div class="header-content">
-      <h1>Agendar Asesoría</h1>
+<div class="usuario-page">
+   <header class="top-header">
+    <h2>Bienvenido a los portafolios</h2>
+    <div class="header-right">
+      <span class="username">{{ userName }}</span>
+      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
     </div>
   </header>
 
-  <div class="card-detail">
+  <div *ngIf="!seleccionado" class="vista-programadores">
 
-    <!-- Seleccionar programador -->
-    <label>Programador:</label>
-    <select [(ngModel)]="uidProgramadorSeleccionado">
-      <option value="">-- Seleccione --</option>
-      <option *ngFor="let p of programadores" [value]="p.uid">
-        {{ p.displayName }} — {{ p.especialidad }}
-      </option>
-    </select>
+    <h3 class="title">Explorar programadores</h3>
 
-    <!-- Fecha y hora -->
-    <label>Fecha:</label>
-    <input type="date" [(ngModel)]="fecha">
+    <div class="programadores-container">
+      <div class="prog-card" *ngFor="let p of programadores">
 
-    <label>Hora:</label>
-    <input type="time" [(ngModel)]="hora">
+        <img 
+          [src]="p.photoURL || 'https://ui-avatars.com/api/?name=' + p.name" 
+          class="prog-img"
+        />
 
-    <!-- Comentario opcional -->
-    <label>Motivo de la asesoría:</label>
-    <textarea [(ngModel)]="comentario" rows="3"></textarea>
+        <div class="prog-name">{{ p.name }}</div>
+        <div class="prog-spec">{{ p.especialidad }}</div>
 
-    <div class="action-buttons">
-      <button class="btn btn-success" (click)="solicitar()">📩 Enviar solicitud</button>
+        <button class="btn-solicitar" (click)="verAsesoria(p)">
+          Solicitar asesoría
+        </button>
+
+      </div>
     </div>
 
   </div>
+
+  <div *ngIf="seleccionado" class="vista-asesoria">
+
+    <div class="asesoria-header">
+      <h3>Asesoría con {{ seleccionado.name }}</h3>
+      <button class="btn-inicio" (click)="volver()">🏠 Inicio</button>
+    </div>
+
+    <p class="disponible">Horarios disponibles</p>
+
+    <div class="calendar-box" *ngIf="calendarReady">
+      <full-calendar 
+        [options]="calendarOptions">
+      </full-calendar>
+    </div>
+
+
+    <textarea placeholder="Comentario opcional" [(ngModel)]="comentario"></textarea>
+
+    <div class="accion-asesoria">
+      <button class="btn-agendar" [disabled]="!selectedEventId"  (click)="agendarAsesoria()">Agendar asesoría</button>
+
+      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+    </div>
+  </div>
+
 </div>

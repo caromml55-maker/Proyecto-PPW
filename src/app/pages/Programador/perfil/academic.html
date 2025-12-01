@@ -8,7 +8,13 @@
     </div>
   </header>
 
-  <div class="card-detail">
+  <div *ngIf="loading" class="select-loading-spinner">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <div class="card-detail" *ngIf="!loading">
 
     <!-- FOTO -->
     <div class="photo-center">
@@ -22,7 +28,7 @@
       <!-- NOMBRE -->
       <div class="form-group">
         <label>Nombre</label>
-        <input type="text" [(ngModel)]="data.name" [disabled]="!isEditing">
+        <input type="text" [(ngModel)]="data.displayName" [disabled]="!isEditing">
       </div>
 
       <!-- ESPECIALIDAD -->

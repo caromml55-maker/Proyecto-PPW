@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDoc,updateDoc } from "firebase/firestore";
 import { RouterModule } from "@angular/router";
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-academic',
@@ -29,14 +30,16 @@ export class Academic implements OnInit{
   };
 
   isEditing = false;
+  loading = false;
 
-  constructor() {}
+  constructor(private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit() {
     const auth = getAuth();
     const user = auth.currentUser;
     if (!user) return;
 
+    this.loading = true;
     const db = getFirestore();
     const ref = doc(db, 'users', user.uid);
     const snap = await getDoc(ref);
@@ -44,19 +47,21 @@ export class Academic implements OnInit{
     if (snap.exists()) {
       const userData = snap.data();
       this.data = {
-        displayName: userData['name'] || '',
+        displayName: userData['name'] || userData['displayName'] || '',
         especialidad: userData['especialidad'] || '',
         descripcion: userData['descripcion'] || '',
         telefono:  userData['telefono'] || '',
         email: userData['email'] || '',
         photoURL: userData['photoURL'] || '',
         redesSociales: {
-          github: userData['redesSociales'].github|| '',
-          linkedin: userData['redesSociales'].linkedin || '',
-          portfolio: userData['redesSociales'].portfolio || ''
+          github: userData['redesSociales']?.github|| '',
+          linkedin: userData['redesSociales']?.linkedin || '',
+          portfolio: userData['redesSociales']?.portfolio || ''
         }
       };
     }
+    this.loading = false;
+    this.cdRef.detectChanges();
   }
 
   cancel(){

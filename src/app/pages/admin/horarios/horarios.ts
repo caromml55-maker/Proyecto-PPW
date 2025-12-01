@@ -8,11 +8,12 @@
   import dayGridPlugin from '@fullcalendar/daygrid';
   import interactionPlugin from '@fullcalendar/interaction';
   import { HorarioService, Horario } from '../../../services/horarios.service';
+import { RouterModule } from "@angular/router";
 
 
   @Component({
     selector: 'app-horarios',
-    imports: [CommonModule,FormsModule,FullCalendarModule],
+    imports: [CommonModule, FormsModule, FullCalendarModule, RouterModule],
     standalone: true,
     templateUrl: './horarios.html',
     styleUrl: './horarios.scss',

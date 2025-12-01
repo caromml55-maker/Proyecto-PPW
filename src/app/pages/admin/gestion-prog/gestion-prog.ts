@@ -71,8 +71,6 @@ export class GestionProg implements OnInit {
   async onProgramadorSelected(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const uid = selectElement.value;
-
-  console.log(uid);
   
   if (!uid) return;
 
@@ -136,7 +134,6 @@ export class GestionProg implements OnInit {
 
   // ACCIÓN: Clic en "Guardar" (Funciona para Crear y Editar)
   async saveProgramador() {
-    this.loading = true;
     try {
       if (this.isCreating) {
         if (!this.formData.photoURL) {
@@ -155,14 +152,10 @@ export class GestionProg implements OnInit {
       this.isEditing = false;
       this.selectedProgramador = null;
       this.selectedUid = '';
-
-     
-
     } catch (e) {
       console.error(e);
       alert('Error al guardar');
     }
-    this.loading = false;
   }
 
   // ACCIÓN: Eliminar

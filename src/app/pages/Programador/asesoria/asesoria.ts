@@ -18,17 +18,41 @@ export class Asesoria implements OnInit {
   constructor(){}
 
   async ngOnInit() {
-    const auth = getAuth();
-    this.uidProgramador = auth.currentUser?.uid || "";
+  const auth = getAuth();
+  this.uidProgramador = auth.currentUser?.uid || "";
 
-    // cargar asesorías pendientes
-    const db = getFirestore();
-    const snap = await getDocs(collection(db, "asesorias"));
+  const db = getFirestore();
 
-    this.pendientes = snap.docs
-      .map(d => ({ id: d.id, ...d.data() }))
-      .filter((a: any) => a.uidProgramador === this.uidProgramador && a.estado === "pendiente");
-  }
+  // 👉 1. obtenemos asesorías
+  const snapA = await getDocs(collection(db, "asesorias"));
+
+  let asesorias = snapA.docs
+    .map((d: any) => ({ id: d.id, ...d.data() as any }))
+    .filter((a: any) =>
+      a.programadorId === this.uidProgramador &&
+      a.estado === "pendiente"
+    );
+
+  // 👉 2. obtenemos usuarios
+  const snapUsers = await getDocs(collection(db, "users"));
+  const users = snapUsers.docs.map((d: any) => ({
+    id: d.id,
+    ...d.data() as any
+  }));
+
+  // 👉 3. combinamos usuario + asesoría
+  this.pendientes = asesorias.map((a: any) => {
+    const u = users.find((x: any) => x.id === a.usuarioId);
+
+    return {
+      ...a,
+      usuarioNombre: u?.displayName || u?.name || u?.nombre || "Usuario desconocido",
+      fecha: a.fechaHora?.substring(0, 10) || "",
+      hora: a.fechaHora?.substring(11, 16) || ""
+    };
+  });
+}
+
 
   async responder(a: any, nuevaRespuesta: string) {
     const db = getFirestore();

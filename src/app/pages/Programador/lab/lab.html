@@ -74,10 +74,14 @@
     <h2 class="section-title"> Proyectos Académicos</h2>
     
     <div class="separator"></div>
-
-        <div *ngIf="proyectosAcademicos.length === 0" class="no-proyectos">
-        📁 Todavía no tienes proyectos académicos
-        </div>
+    
+    <div *ngIf="loading" class="no-proyectos">
+      Cargando...
+    </div>
+    
+    <div *ngIf="!loading && proyectosAcademicos.length === 0" class="no-proyectos">
+      📁 Todavía no tienes proyectos académicos
+    </div>
 
     <div class="proyectos-container" *ngIf="proyectosAcademicos.length > 0">
       <div class="proyecto-card" *ngFor="let p of proyectosAcademicos">
@@ -108,7 +112,12 @@
     <!-- ================= LABORALES ================= -->
     <h2 class="section-title">Proyectos Laborales</h2>
     <div class="separator"></div>
-    <div *ngIf="proyectosLaborales.length === 0" class="no-proyectos">
+    
+    <div *ngIf="loading" class="no-proyectos">
+      Cargando...
+    </div>
+    
+    <div *ngIf="!loading && proyectosLaborales.length === 0" class="no-proyectos">
       👜 Todavía no tienes proyectos laborales
     </div>
 

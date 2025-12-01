@@ -1,61 +1,181 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { getAuth } from 'firebase/auth';
-import { addDoc, collection, getDocs, getFirestore } from 'firebase/firestore';
+import { getAuth, signOut } from 'firebase/auth';
+import { addDoc, collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 import { FormsModule } from '@angular/forms';
-import { ChangeDetectorRef } from '@angular/core';
-
+import { FullCalendarModule } from '@fullcalendar/angular';
+import { RouterModule } from '@angular/router';
+import { Router } from '@angular/router';
+import {CalendarOptions} from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import interactionPlugin from '@fullcalendar/interaction';
 
 @Component({
   selector: 'app-usuario',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,RouterModule, FullCalendarModule],
   templateUrl: './usuario.html',
   styleUrls: ['./usuario.scss']
 })
 export class Usuario implements OnInit {
-   programadores: any[] = [];
-  uidUsuario = "";
+  programadores: any[] = [];
+  seleccionado: any = null;
 
-  uidProgramadorSeleccionado = "";
-  fecha = "";
-  hora = "";
+  eventosCalendar: any[] = [];
+  horaSeleccionada = "";
   comentario = "";
+  userName = "";
+  selectedEventId: string | null = null;
+  calendarReady = false;
 
-  constructor(private cdRef: ChangeDetectorRef) {}
+
+  constructor(private router: Router) {}
 
   async ngOnInit(){
-    const auth = getAuth();
-    this.uidUsuario = auth.currentUser?.uid || "";
+    setTimeout(async () => {
+    await this.cargarUsuario();
+    await this.cargarProgramadores();
+  }, 200);
+}
 
-    const db = getFirestore();
-    const snap = await getDocs(collection(db, "users"));
 
-    this.programadores = snap.docs
-      .map(d => ({ uid: d.id, ...d.data() }))
-      .filter((u: any) => u.role === "programador");
+  async cargarUsuario(){
+  const auth = getAuth();
+  this.userName = auth.currentUser?.displayName || "";
+}
 
-    this.cdRef.detectChanges();
+async cargarProgramadores(){
+  const db = getFirestore();
+  const ref = collection(db, "users");
+  const snap = await getDocs(ref);
+
+  this.programadores = snap.docs
+    .map(d => ({id: d.id, ...d.data()}))
+    .filter((u:any) => u.role === "programador");
+}
+
+verAsesoria(programador: any){
+  this.seleccionado = programador;
+  this.cargarHorarios(programador.id);
+}
+
+volver(){
+  this.seleccionado = null;
+}
+
+calendarOptions: CalendarOptions = {
+  plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+  initialView: 'dayGridMonth',
+  locale: 'es',
+  selectable: false,
+  events: this.eventosCalendar,
+  headerToolbar: {
+    left: 'prev,next today',
+    center: 'title',
+    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+  },
+  eventClick: (info) => this.onEventClick(info) 
+};
+
+async cargarHorarios(uid:string){
+
+  const db = getFirestore();
+  const ref = collection(db, "horarios");
+  const q = query(ref, where("programadorId", "==", uid));
+  const snap = await getDocs(q);
+
+  this.eventosCalendar = snap.docs.map(d => {
+    const h: any = d.data();
+    return {
+      id: d.id,                          
+      title: "Disponible",
+      start: `${h.fecha}T${h.inicio}`,
+      end:   `${h.fecha}T${h.fin}`,
+      backgroundColor: '#28a745',      
+      borderColor: '#28a745'
+    };
+  });
+
+  this.calendarOptions = {
+    ...this.calendarOptions,
+    events: [...this.eventosCalendar]
+  };
+
+  this.calendarReady = true;
+}
+
+
+async agendarAsesoria(){
+  if (!this.horaSeleccionada || !this.selectedEventId) {
+    alert("Primero selecciona un horario del calendario.");
+    return;
   }
 
-  async solicitar(){
-    if (!this.uidProgramadorSeleccionado || !this.fecha || !this.hora) {
-      alert("Debes completar programador, fecha y hora");
-      return;
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const db = getFirestore();
+
+  await addDoc(collection(db, "asesorias"), {
+    programadorId: this.seleccionado.id,
+    usuarioId: user?.uid,
+    fechaHora: this.horaSeleccionada,
+    comentario: this.comentario,
+    estado: "pendiente"
+  });
+
+  this.eventosCalendar = this.eventosCalendar.map(e => {
+    if (e.id === this.selectedEventId) {
+      return {
+        ...e,
+        title: "Solicitado",
+        backgroundColor: '#fadb7dff', // amarillo
+        borderColor: '#ffc107'
+      };
     }
+    return e;
+  });
 
-    const db = getFirestore();
-    await addDoc(collection(db,"asesorias"),{
-      uidProgramador: this.uidProgramadorSeleccionado,
-      uidUsuarioSolicitante: this.uidUsuario,
-      fecha: this.fecha,
-      hora: this.hora,
-      comentario: this.comentario || "",
-      estado: "pendiente",
-      respuesta: "",
-      fechaSolicitud: new Date()
+  this.actualizarCalendario();
+
+  alert("La solicitud fue enviada al programador 👍");
+
+  // Limpiar selección pero quedarnos en la misma vista
+  this.horaSeleccionada = "";
+  this.selectedEventId = null;
+  this.comentario = "";
+}
+
+
+    logout() {
+    const auth = getAuth();
+    signOut(auth).then(() => {
+      this.router.navigate(['/']);
     });
-
   }
+  actualizarCalendario(){
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      events: [...this.eventosCalendar]
+    };
+  }
+
+ onEventClick(info: any) {
+  const event = info.event;
+
+  this.horaSeleccionada = event.startStr;   
+  this.selectedEventId = event.id;     
+
+  console.log("EVENTO SELECCIONADO:", this.horaSeleccionada);
+
+  // ACTUALIZAR COLORES CORRECTAMENTE
+  this.calendarOptions.events = this.eventosCalendar.map(e => ({
+    ...e,
+    backgroundColor: e.id === event.id ? '#0d6efd' : '#28a745',
+    borderColor:     e.id === event.id ? '#0d6efd' : '#28a745'
+  }));
+
+  this.calendarOptions = { ...this.calendarOptions };
+}
 
 }

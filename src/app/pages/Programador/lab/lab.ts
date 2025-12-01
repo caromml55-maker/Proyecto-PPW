@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { getAuth } from 'firebase/auth';
 import { addDoc, collection, getDocs, getFirestore, query, updateDoc, where } from 'firebase/firestore';
 import { RouterModule } from "@angular/router";
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-lab',
@@ -18,6 +19,7 @@ export class Lab implements OnInit{
   proyectosLaborales: any[] = [];
 
   uidUsuario = "";
+  loading = false;
 
   nuevoProyecto = {
     tipo: 'academico',
@@ -30,23 +32,19 @@ export class Lab implements OnInit{
   };
   creando = false;
 
-  constructor() {}
+  constructor(private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit() {
-  const auth = getAuth();
-
-  const checkUserLoaded = setInterval(async () => {
+    const auth = getAuth();
     const user = auth.currentUser;
-
     if (user) {
-        clearInterval(checkUserLoaded);
-        this.uidUsuario = user.uid;
-        await this.cargarPortafolio();
-      }
-    }, 300);
+      this.uidUsuario = user.uid;
+      await this.cargarPortafolio();
+    }
   }
 
 async cargarPortafolio() {
+  this.loading = true;
   const db = getFirestore();
   const ref = collection(db, 'portafolios');
   const q = query(ref, where('uidProgramador', '==', this.uidUsuario));
@@ -75,9 +73,9 @@ async cargarPortafolio() {
     this.proyectosAcademicos = [];
     this.proyectosLaborales = [];
   }
+  this.loading = false;
+  this.cdRef.detectChanges();
 }
-
-
   
   async guardarProyecto() {
     const db = getFirestore();
@@ -158,7 +156,5 @@ async cargarPortafolio() {
 
   await this.cargarPortafolio();
 }
-
-
 
 }
