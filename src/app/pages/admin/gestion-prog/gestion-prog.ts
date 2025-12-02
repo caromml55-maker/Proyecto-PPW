@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { ProgramadorService } from '../../../services/programador.service';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
+import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
 
 @Component({
   selector: 'app-gestion-prog',
@@ -14,154 +15,161 @@ import { ChangeDetectorRef } from '@angular/core';
 })
 export class GestionProg implements OnInit {
   programadores: any[] = [];
-  loading = false;
+  admins: any[] = [];
+  usuarios: any[] = [];
 
+  selectedProgramador: any= null;
+  selectedUid: string | null = null;
+  selectedUser: any = null;
+
+  selectedAdmin: string | null = null;
+  selectedUsuario: string | null = null; 
+
+  loading = false;
   isCreating = false; 
   isEditing = false;
   errorMsg: string | null = null; 
 
-
-  selectedProgramador: any = null;
-  selectedUid: string | null = null;
-
-  formData: any = {
-    displayName: '',
-    email: '',
-    especialidad: '',
-    descripcion: '',
-    photoURL: '',
-    redesSociales: {
-      github: '',
-      linkedin: '',
-      portfolio: ''
+    formData: any = {
+      displayName: '',
+      email: '',
+      especialidad: '',
+      descripcion: '',
+      photoURL: '',
+      redesSociales: {
+        github: '',
+        linkedin: '',
+        portfolio: ''
     }
   };
-   constructor(
+
+  constructor(
     private programadorService: ProgramadorService, 
     private router: Router,
-    private cdRef: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
-    this.loadProgramadores();
+  async ngOnInit() {
+    this.loadProgramadores(); 
+    this.loadAdmins();        
+    this.loadUsers(); 
   }
 
-  horariosFormData: any[] = [
-    { dia: 'lunes', activo: false, horaInicio: '', horaFin: '' },
-    { dia: 'martes', activo: false, horaInicio: '', horaFin: '' },
-    { dia: 'miércoles', activo: false, horaInicio: '', horaFin: '' },
-    { dia: 'jueves', activo: false, horaInicio: '', horaFin: '' },
-    { dia: 'viernes', activo: false, horaInicio: '', horaFin: '' },
-  ];
-
-  async loadProgramadores() {
+async loadProgramadores() {
     this.loading = true;
-   try {
-    this.programadores = await this.programadorService.getProgramadores();
-    this.errorMsg = null;
-    this.cdRef.detectChanges();
+    try {
+      this.programadores = await this.programadorService.getProgramadores();
+      this.errorMsg = null;
     } catch (e) {
-    console.error(e);
+      console.error(e);
       this.errorMsg = 'No se pudieron cargar los programadores.';
       this.programadores = [];
     }
     this.loading = false;
   }
 
+  
+
   async onProgramadorSelected(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const uid = selectElement.value;
-  
-  if (!uid) return;
+    if (!uid) return;
 
-  this.selectedUid = uid; 
-  this.selectedProgramador = null; 
-  this.isEditing = false; 
-    
-  const prog = await this.programadorService.getProgramador(uid);
-    
-  if (prog) {
-    this.selectedProgramador = prog;
-    this.formData = JSON.parse(JSON.stringify(prog));
+    this.loading = true;
+    this.isCreating = false;
+    this.isEditing = false;
 
-    this.formData.name = this.formData.name ? this.formData.name : this.formData.displayName; 
-      
-    if (!this.formData.redesSociales) {
-      this.formData.redesSociales = { github: '', linkedin: '', portfolio: '' };
+    const prog = await this.programadorService.getProgramador(uid);
+
+    if (prog) {
+      this.selectedProgramador = prog;
+      this.selectedUid = uid;
+      this.formData = JSON.parse(JSON.stringify(prog));
+
+      if (!this.formData.redesSociales) {
+        this.formData.redesSociales = {
+          github: '',
+          linkedin: '',
+          portfolio: ''
+        };
+      }
     }
-    this.cdRef.detectChanges();
+
+    this.loading = false;
   }
-  this.loading = false;
-}
-
-
 
   initCreateMode() {
-    this.isCreating = true; // ESTO OCULTA EL COMBOBOX
-    this.isEditing = true;  // Habilita los inputs
+    this.isCreating = true;  // ESTO OCULTA EL COMBOBOX
+    this.isEditing = true;   // Habilita los inputs
     this.selectedProgramador = null;
-    this.selectedUid = ''; // Resetea el select
-    
+    this.selectedUid = '';   // Resetea el select
+
     // Limpiamos el formulario
     this.formData = {
-      name: '',
+      displayName: '',
       email: '',
       especialidad: '',
       descripcion: '',
       telefono: '',
-      photoURL: '', 
-      redesSociales: { github: '', linkedin: '', portfolio: '' }
+      photoURL: '',
+      redesSociales: {
+        github: '',
+        linkedin: '',
+        portfolio: ''
+      }
     };
   }
 
-  // ACCIÓN: Clic en "Editar" (Habilita escritura)
   enableEditMode() {
     this.isEditing = true;
   }
 
-  // ACCIÓN: Clic en "Cancelar"
   cancelAction() {
     this.isCreating = false;
     this.isEditing = false;
-    
-    // Si estábamos viendo a alguien, restauramos sus datos originales
+
     if (this.selectedProgramador) {
-       this.formData = JSON.parse(JSON.stringify(this.selectedProgramador));
+      this.formData = JSON.parse(JSON.stringify(this.selectedProgramador));
     } else {
-       this.selectedUid = ''; 
+      this.selectedUid = '';
     }
   }
 
-  // ACCIÓN: Clic en "Guardar" (Funciona para Crear y Editar)
   async saveProgramador() {
+    this.loading = true;
     try {
       if (this.isCreating) {
+        // CREAR
         if (!this.formData.photoURL) {
-           this.formData.photoURL = `https://ui-avatars.com/api/?name=${this.formData.name}&background=random`;
+          this.formData.photoURL =
+            `https://ui-avatars.com/api/?name=${this.formData.displayName}&background=random`;
         }
         await this.programadorService.crearProgramador(this.formData);
         alert('Programador creado correctamente');
       } else {
-     
-        await this.programadorService.actualizarProgramador(this.selectedProgramador.uid, this.formData);
+        // EDITAR
+        await this.programadorService.actualizarProgramador(
+          this.selectedProgramador.uid,
+          this.formData
+        );
         alert('Datos actualizados correctamente');
       }
-      
-      await this.loadProgramadores();
+
       this.isCreating = false;
       this.isEditing = false;
       this.selectedProgramador = null;
       this.selectedUid = '';
+
+      await this.loadProgramadores();
     } catch (e) {
       console.error(e);
       alert('Error al guardar');
     }
+    this.loading = false;
   }
 
-  // ACCIÓN: Eliminar
   async deleteProgramador() {
     if (!confirm('¿Estás seguro de eliminar a este programador?')) return;
-    
+
     try {
       await this.programadorService.eliminarProgramador(this.selectedProgramador.uid);
       this.selectedProgramador = null;
@@ -181,5 +189,37 @@ export class GestionProg implements OnInit {
   logout() {
     this.router.navigate(['/login']);
   }
+
+  async loadAdmins() {
+    const db = getFirestore();
+    const ref = collection(db, 'users');
+    const q = query(ref, where('role', '==', 'admin'));
+    const snap = await getDocs(q);
+
+    this.admins = snap.docs.map(d => {
+      const data: any = d.data();
+      return {
+        uid: data.uid || d.id,
+        ...data
+      };
+    });
+  }
+
+
+  async loadUsers() {
+    const db = getFirestore();
+    const ref = collection(db, 'users');
+    const q = query(ref, where('role', '==', 'user'));
+    const snap = await getDocs(q);
+
+    this.usuarios = snap.docs.map(d => {
+      const data: any = d.data();
+      return {
+        uid: data.uid || d.id,
+        ...data
+      };
+    });
+  }
+  
 }
 

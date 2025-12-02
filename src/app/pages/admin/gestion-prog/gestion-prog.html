@@ -3,48 +3,84 @@
     <div class="header-content">
       <h1>Gestión de Programadores</h1>
       <div class="header-actions">
-        <button class="btn btn-secondary" (click)="goToInicio()">🏠 Inicio</button>
-        <!-- BOTÓN QUE ACTIVA MODO AGREGAR -->
-        <button class="btn btn-primary" (click)="initCreateMode()">
-          + Agregar Programador
-        </button>
-        <button class="btn btn-secondary" (click)="logout()">Cerrar Sesión</button>
+        <button class="btn btn-primary" (click)="initCreateMode()">+ Agregar Programador</button>
+        <button class="btn btn-secondary" (click)="goToInicio()">Inicio</button>
       </div>
     </div>
   </header>
 
   <div class="admin-content">
 
-    <!-- ======================================================= -->
-    <!-- PARTE 1: SELECCIÓN Y DETALLE (Solo si NO estamos creando) -->
-    <!-- ======================================================= -->
     @if (!isCreating) {
       <div class="view-section">
         
         <!-- COMBOBOX (Solo aparece aquí) -->
         <div class="selector-container">
-          <label for="selector">Seleccionar programador:</label>
-          <select id="selector" [(ngModel)]="selectedUid" (change)="onProgramadorSelected($event)" [disabled]="loading" class="form-select">
-            <option value="null" selected>-- Selecciona de la lista --</option>
-            @for (p of programadores; track p.uid) {
-              <option [value]="p.uid">{{ p.name }} ({{ p.email }})</option>
-            }
-          </select>
+          <h2 class="selector-title">Seleccionar usuarios del sistema</h2>
 
-          <div *ngIf="loading" class="select-loading-spinner">
-            <div class="spinner-border spinner-border-sm text-primary" role="status">
-              <span class="visually-hidden">Cargando...</span>
+  <div class="selector-grid">
+
+    <!-- PROGRAMADORES (ya existente, con lógica de edición) -->
+    <div class="selector-block">
+              <label>Programadores</label>
+              <select [(ngModel)]="selectedProgramador"
+                      (change)="loadProgramadores()"
+                      [disabled]="loading"
+                      class="form-select">
+
+                <option value="" selected disabled>-- Seleccionar programador --</option>
+                <option *ngFor="let p of programadores" [value]="p.uid">
+                  {{ p.displayName || p.name }} ({{ p.email }})
+                </option>
+              </select>
             </div>
-          </div>
 
-          <!-- Error message -->
-          <div *ngIf="errorMsg" class="alert alert-danger mt-2">
-            {{ errorMsg }}
-          </div>
-        </div>
+    <!-- ADMINISTRADORES (solo visual, sin lógica extra) -->
+    <div class="selector-block">
+              <label>Administradores</label>
+              <select [(ngModel)]="selectedAdmin"
+                      (change)="loadAdmins()"
+                      [disabled]="loading"
+                      class="form-select">
+
+                <option value="" selected disabled>-- Seleccionar administrador --</option>
+                <option *ngFor="let a of admins" [value]="a.uid">
+                  {{ a.displayName || a.name }} ({{ a.email }})
+                </option>
+              </select>
+            </div>
+
+    <!-- USUARIOS NORMALES (solo visual) -->
+   <div class="selector-block">
+              <label>Usuarios</label>
+              <select [(ngModel)]="selectedUsuario"
+                      (change)="loadUsers()"
+                      [disabled]="loading"
+                      class="form-select">
+
+                <option value="" selected disabled>-- Seleccionar usuario --</option>
+                <option *ngFor="let u of usuarios" [value]="u.uid">
+                  {{ u.displayName || u.name }} ({{ u.email }})
+                </option>
+              </select>
+            </div>
+
+  </div>
+
+  <div *ngIf="loading" class="select-loading-spinner">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="errorMsg" class="alert alert-danger mt-2">
+    {{ errorMsg }}
+  </div>
+</div>
 
         <!-- TARJETA DE INFORMACIÓN (Aparece al seleccionar) -->
-        @if (selectedProgramador) {
+        @if (selectedUser) {
           <div class="card-detail">
             
             <!-- 1. FOTO AL INICIO (Requisito cumplido) -->

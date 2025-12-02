@@ -24,23 +24,57 @@
 /* Selector Combobox */
 .selector-container {
   background: white;
-  padding: 20px;
+  padding: 20px 24px 24px;
   border-radius: 8px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-  max-width: 600px;
+  max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
-  
-  label { font-weight: bold; display: block; margin-bottom: 8px; color: #555; }
-  select {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    font-size: 1rem;
-    background-color: #fff;
+
+  .selector-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    text-align: center;
   }
+
+  .selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 18px;
+  }
+
+  .selector-block {
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: #fff;
+      transition: border-color 0.2s;
+      
+      &:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+    }
+  }
+    .select-loading-spinner {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
 }
 
 /* Tarjetas (Detalle y Crear) */
@@ -175,3 +209,26 @@
 .btn-success { background-color: #198754; }
 .btn-warning { background-color: #ffc107; color: #000; }
 .btn-danger { background-color: #dc3545; }
+
+@media (max-width: 850px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .selector-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reset-btn {
+  background: #f8f9fa;
+  border: 1px solid #d1d1d1;
+  color: #444;
+  margin-top: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  &:hover {
+    background: #e2e6ea;
+  }
+}

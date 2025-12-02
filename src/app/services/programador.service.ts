@@ -5,7 +5,7 @@ import { AppUser } from '../models/app-user.model';
 @Injectable({ providedIn: 'root' })
 export class ProgramadorService {
   private collectionName = 'users';
-
+  db = getFirestore();
   constructor() {}
 
   private getCollection() {
@@ -45,6 +45,44 @@ export class ProgramadorService {
       return [];
     }
   }
+
+  async getAllUsers(){
+    const snap = await getDocs(collection(this.db, "users"));
+    return snap.docs.map(d => ({
+      uid: d.id,
+      ...d.data()
+    }));
+  }
+
+  async getUserByUid(uid: string){
+    const ref = doc(this.db, "users", uid);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      return { uid: snap.id, ...snap.data() };
+    }
+    return null;
+  }
+
+  async crearUsuario(data: any){
+
+    if (!data.uid) {
+      data.uid = crypto.randomUUID();  // genera un uid si no viene
+    }
+
+    const ref = doc(this.db, "users", data.uid);
+    await setDoc(ref, data);
+  }
+
+  async actualizarUsuario(uid: string, data: any){
+    const ref = doc(this.db, "users", uid);
+    await updateDoc(ref, data);
+  }
+
+  async eliminarUsuario(uid: string){
+    const ref = doc(this.db, "users", uid);
+    await deleteDoc(ref);
+  }
+
 
   async getProgramador(uid: string): Promise<any | null> {
     try {
