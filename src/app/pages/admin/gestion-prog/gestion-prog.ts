@@ -18,9 +18,9 @@ export class GestionProg implements OnInit {
   admins: any[] = [];
   usuarios: any[] = [];
 
-  selectedProgramador: any= null;
   selectedUid: string | null = null;
   selectedUser: any = null;
+  selectedProgramador: any = null;
 
   selectedAdmin: string | null = null;
   selectedUsuario: string | null = null; 
@@ -46,16 +46,31 @@ export class GestionProg implements OnInit {
   constructor(
     private programadorService: ProgramadorService, 
     private router: Router,
+    private cdref: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
-    this.loadProgramadores(); 
-    this.loadAdmins();        
-    this.loadUsers(); 
+    this.loading = true;
+    
+    try {
+      // Ejecutar en paralelo (más rápido si no dependen entre sí)
+      await Promise.all([
+        this.loadProgramadores(),
+        this.loadAdmins(),
+        this.loadUsers()
+      ]);
+      
+      this.loading = false;
+      this.cdref.detectChanges();
+      
+    } catch (error) {
+      console.error('Error en ngOnInit:', error);
+      this.loading = false;
+      this.cdref.detectChanges();
+    }
   }
 
-async loadProgramadores() {
-    this.loading = true;
+  async loadProgramadores() {
     try {
       this.programadores = await this.programadorService.getProgramadores();
       this.errorMsg = null;
@@ -64,16 +79,16 @@ async loadProgramadores() {
       this.errorMsg = 'No se pudieron cargar los programadores.';
       this.programadores = [];
     }
-    this.loading = false;
   }
-
-  
 
   async onProgramadorSelected(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     const uid = selectElement.value;
     if (!uid) return;
-
+    
+    this.selectedUser = this.selectedProgramador
+    this.selectedAdmin = null;
+    this.selectedUsuario = null;
     this.loading = true;
     this.isCreating = false;
     this.isEditing = false;
@@ -81,7 +96,6 @@ async loadProgramadores() {
     const prog = await this.programadorService.getProgramador(uid);
 
     if (prog) {
-      this.selectedProgramador = prog;
       this.selectedUid = uid;
       this.formData = JSON.parse(JSON.stringify(prog));
 
@@ -95,12 +109,75 @@ async loadProgramadores() {
     }
 
     this.loading = false;
+    this.cdref.detectChanges();
+  }
+
+  async onAdminSelected(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const uid = selectElement.value;
+    if (!uid) return;
+    
+    this.selectedUser = this.selectedAdmin;
+    this.selectedProgramador = null;
+    this.selectedUsuario = null;
+    this.loading = true;
+    this.isCreating = false;
+    this.isEditing = false;
+
+    const prog = await this.programadorService.getProgramador(uid);
+
+    if (prog) {
+      this.selectedUid = uid;
+      this.formData = JSON.parse(JSON.stringify(prog));
+
+      if (!this.formData.redesSociales) {
+        this.formData.redesSociales = {
+          github: '',
+          linkedin: '',
+          portfolio: ''
+        };
+      }
+    }
+
+    this.loading = false;
+    this.cdref.detectChanges();
+  }
+
+  async onUsuarioSelected(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    const uid = selectElement.value;
+    if (!uid) return;
+    
+    this.selectedUser = this.selectedUsuario;
+    this.selectedAdmin = null;
+    this.selectedProgramador = null;
+    this.loading = true;
+    this.isCreating = false;
+    this.isEditing = false;
+
+    const prog = await this.programadorService.getProgramador(uid);
+
+    if (prog) {
+      this.selectedUid = uid;
+      this.formData = JSON.parse(JSON.stringify(prog));
+
+      if (!this.formData.redesSociales) {
+        this.formData.redesSociales = {
+          github: '',
+          linkedin: '',
+          portfolio: ''
+        };
+      }
+    }
+
+    this.loading = false;
+    this.cdref.detectChanges();
   }
 
   initCreateMode() {
     this.isCreating = true;  // ESTO OCULTA EL COMBOBOX
     this.isEditing = true;   // Habilita los inputs
-    this.selectedProgramador = null;
+    this.selectedUser = null;
     this.selectedUid = '';   // Resetea el select
 
     // Limpiamos el formulario
@@ -127,14 +204,14 @@ async loadProgramadores() {
     this.isCreating = false;
     this.isEditing = false;
 
-    if (this.selectedProgramador) {
-      this.formData = JSON.parse(JSON.stringify(this.selectedProgramador));
+    if (this.selectedUser) {
+      this.formData = JSON.parse(JSON.stringify(this.selectedUser));
     } else {
       this.selectedUid = '';
     }
   }
 
-  async saveProgramador() {
+  async saveUser() {
     this.loading = true;
     try {
       if (this.isCreating) {
@@ -147,8 +224,9 @@ async loadProgramadores() {
         alert('Programador creado correctamente');
       } else {
         // EDITAR
+        console.log(this.selectedUser)
         await this.programadorService.actualizarProgramador(
-          this.selectedProgramador.uid,
+          this.selectedUser,
           this.formData
         );
         alert('Datos actualizados correctamente');
@@ -156,7 +234,6 @@ async loadProgramadores() {
 
       this.isCreating = false;
       this.isEditing = false;
-      this.selectedProgramador = null;
       this.selectedUid = '';
 
       await this.loadProgramadores();
@@ -165,14 +242,15 @@ async loadProgramadores() {
       alert('Error al guardar');
     }
     this.loading = false;
+    this.cdref.detectChanges()
   }
 
   async deleteProgramador() {
     if (!confirm('¿Estás seguro de eliminar a este programador?')) return;
 
     try {
-      await this.programadorService.eliminarProgramador(this.selectedProgramador.uid);
-      this.selectedProgramador = null;
+      await this.programadorService.eliminarProgramador(this.selectedUser.uid);
+      this.selectedUser = null;
       this.selectedUid = '';
       await this.loadProgramadores();
       alert('Programador eliminado');

@@ -146,11 +146,12 @@ export class Usuario implements OnInit {
   }
 
 
-  async agendarAsesoria(){
+  async agendarAsesoria() {
+    this.cargarUsuario()
     if (!this.horaSeleccionada || !this.selectedEventId) {
       alert("Primero selecciona un horario del calendario.");
       return;
-    }
+    } 
 
     const auth = getAuth();
     const user = auth.currentUser;
@@ -165,7 +166,7 @@ export class Usuario implements OnInit {
     });
 
     await addDoc(collection(db, "notifications"), {
-      usuarioId: this.seleccionado.id,
+      usuarioId: user?.uid,
       mensaje: `📩 Nueva solicitud de asesoría de ${this.userName}`,
       fechaHora: new Date().toISOString(),
       leido: false

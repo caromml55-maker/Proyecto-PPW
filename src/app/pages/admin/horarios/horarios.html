@@ -27,16 +27,21 @@
 
     <div class="form-grid" *ngIf="selectedProgId">
       <label>Fecha:</label>
-      <input type="date" [(ngModel)]="fecha">
+      <input type="date" [(ngModel)]="fecha" [min]="getFechaMinima()" [max]="getFechaMaxima()" (change)="validarFormulario()">
 
       <label>Hora inicio:</label>
-      <input type="time" [(ngModel)]="horaInicio">
+      <input type="time" [(ngModel)]="horaInicio" (change)="onHoraInicioChange($event)" (change)="validarFormulario()">
 
       <label>Hora fin:</label>
-      <input type="time" [(ngModel)]="horaFin">
+      <input type="time" [(ngModel)]="horaFin" (change)="onHoraFinChange($event)" (change)="validarFormulario()">
+
+      <!-- Mensaje de error -->
+      <div *ngIf="mensajeError" class="error-message">
+        {{ mensajeError }}
+      </div>
 
       <div class="action-buttons">
-        <button class="btn btn-success" (click)="guardarHorario()">💾 Guardar horario</button>
+        <button class="btn btn-success" (click)="guardarHorario()" [disabled]="!isFormValid">💾 Guardar horario</button>
       </div>
     </div>
     
