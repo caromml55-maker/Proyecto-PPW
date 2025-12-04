@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { getAuth, signOut } from 'firebase/auth';
-import { addDoc, collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { FormsModule } from '@angular/forms';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { RouterModule } from '@angular/router';
@@ -25,6 +25,8 @@ export class Usuario implements OnInit {
   seleccionado: any = null;
   notificaciones: any[] = [];
   eventoSeleccionado: any = null;
+  showNotifications: boolean = false;
+
 
   eventosCalendar: any[] = [];
   horaSeleccionada = "";
@@ -95,13 +97,91 @@ export class Usuario implements OnInit {
 
     const db = getFirestore();
     const ref = collection(db, "notifications");
-    const q = query(ref, where("usuarioId", "==", user.uid));
+    const q = query(ref, where("usuarioId", "==", user.uid), orderBy("fechaHora", "desc"));
     const snap = await getDocs(q);
 
     this.notificaciones = snap.docs.map(d => ({
       id: d.id,
       ...d.data()
     }));
+    this.cdRef.detectChanges();
+  }
+
+  // Limpiar todas las notificaciones
+  limpiarNotificaciones() {
+    this.notificaciones = [];
+    this.showNotifications = false;
+  }
+
+  // Mostrar/ocultar notificaciones
+  toggleNotifications(event: Event) {
+    event.stopPropagation();
+    this.showNotifications = !this.showNotifications;
+  }
+
+  // Marcar todas como leídas
+  marcarTodasComoLeidas() {
+    this.notificaciones.forEach(n => this.marcarComoLeida(n.id));
+  }
+
+  // Cerrar dropdown si se hace clic fuera
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const isNotificationBtn = target.closest('.notification-btn');
+    const isInsideDropdown = target.closest('.notification-dropdown');
+    
+    if (!isNotificationBtn && !isInsideDropdown) {
+      this.showNotifications = false;
+    }
+  }
+
+  // Al hacer clic en una notificación
+  async onClickNotificacion(notificacion: any) {
+    // Mostrar alert con detalles
+    this.mostrarDetallesNotificacion(notificacion);
+    
+    // Marcar como leída en Firebase si no lo está
+    if (!notificacion.leida) {
+      await this.marcarComoLeida(notificacion.id);
+      notificacion.leida = true;
+    }
+  }
+
+  // Mostrar detalles en alert
+  mostrarDetallesNotificacion(notificacion: any) {
+    let detalles = `📋 ${notificacion.mensaje}\n\n`;
+    
+    detalles += `👤 Tipo: Asesoría\n`;
+      detalles += `📅 Fecha: ${this.getFechaFromISO(notificacion.fechaHora)}\n`;
+    detalles += `⏰ Hora: ${this.getHoraFromISO(notificacion.fechaHora)}\n`;
+    
+    // Mostrar alert con opciones
+    alert(`${detalles}`);
+    
+    this.marcarComoLeida(notificacion.id);
+    this.cdRef.detectChanges();
+  }
+
+  // Marcar como leída en Firebase
+  async marcarComoLeida(id: string) {
+    try {
+      const db = getFirestore();
+      const ref = doc(db, "notifications", id);
+      
+      await updateDoc(ref, {
+        leido: true
+      });
+
+      this.cargarNotificaciones();
+    } catch (error) {
+      console.error('Error al marcar como leída:', error);
+    }
+  }
+
+  // En tu componente TypeScript
+  getNotificacionesNoLeidas(): number {
+    return this.notificaciones.filter(n => !n.leido).length;
   }
 
   verAsesoria(programador: any){
@@ -246,4 +326,43 @@ export class Usuario implements OnInit {
     this.cdRef.detectChanges();
   }
 
+  // Extraer fecha (YYYY-MM-DD) desde ISO
+  getFechaFromISO(isoString: string): string {
+    if (!isoString) return 'No especificada';
+    
+    try {
+      const fecha = new Date(isoString);
+      if (isNaN(fecha.getTime())) return 'Fecha inválida';
+      
+      // Formato: "02 de diciembre de 2025"
+      const opciones: Intl.DateTimeFormatOptions = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      };
+      
+      return fecha.toLocaleDateString('es-ES', opciones);
+    } catch (error) {
+      return 'Fecha inválida';
+    }
+  }
+
+  // Extraer hora (HH:MM) desde ISO
+  getHoraFromISO(isoString: string): string {
+    if (!isoString) return 'No especificada';
+    
+    try {
+      const fecha = new Date(isoString);
+      if (isNaN(fecha.getTime())) return 'Hora inválida';
+      
+      // Formato: "00:27" (24 horas)
+      return fecha.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+    } catch (error) {
+      return 'Hora inválida';
+    }
+  }
 }

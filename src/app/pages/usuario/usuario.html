@@ -1,28 +1,75 @@
 <div class="usuario-page">
    <header class="top-header">
-    <h2>Bienvenido a los portafolios</h2>
-    <div class="header-right">
-      <span class="username">{{ userName }}</span>
-      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
-    </div>
-  </header>
-
-    <div *ngIf="notificaciones.length > 0" class="notificacion-box">
-      <div class="noti" *ngFor="let n of notificaciones">
-        {{ n.mensaje }}
+  <h2>Bienvenido a los portafolios</h2>
+  <div class="header-right">
+    
+    <!-- Notificaciones -->
+    <div class="notification-wrapper">
+      <button class="notification-btn" (click)="toggleNotifications($event)">
+        🔔
+        <span class="badge" *ngIf="getNotificacionesNoLeidas() > 0">
+          {{ getNotificacionesNoLeidas() > 99 ? '99+' : getNotificacionesNoLeidas() }}
+        </span>
+      </button>
+      
+      <!-- Dropdown -->
+      <div class="notification-dropdown" *ngIf="showNotifications">
+        <div class="dropdown-header">
+          <h3>
+            Notificaciones 
+            <span class="unread-count" *ngIf="getNotificacionesNoLeidas() > 0">
+              ({{ getNotificacionesNoLeidas() }} nuevas)
+            </span>
+          </h3>
+          <div class="dropdown-actions">
+            <button class="btn-mark-read" (click)="marcarTodasComoLeidas()">
+              ✅ Marcar todas
+            </button>
+          </div>
+        </div>
+        
+        <div class="notification-list">
+          <div *ngIf="notificaciones.length === 0" class="empty-notifications">
+            No hay notificaciones
+          </div>
+          
+          <div class="notification-item" 
+               *ngFor="let n of notificaciones; let i = index"
+               [class.unread]="!n.leido"
+               (click)="onClickNotificacion(n)">
+            
+            <div class="notification-content">
+              <!-- Indicador de no leída -->
+              <div class="unread-indicator" *ngIf="!n.leido"></div>
+              
+              <span class="notification-text">{{ n.mensaje }}</span>
+            </div>
+            
+            <div class="notification-footer">
+              <small class="notification-time">
+                {{ n.fechaHora | date:'short' }}
+              </small>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    
+    <span class="username">{{ userName }}</span>
+    <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+  </div>
+</header>
 
 
   <div *ngIf="!seleccionado" class="vista-programadores">
 
-    <h3 class="title">Explorar programadores</h3>
+  <h3 class="title">Explorar programadores</h3>
 
-    <div *ngIf="loading" class="select-loading-spinner">
-      <div class="spinner-border spinner-border-sm text-primary" role="status">
-        <span class="visually-hidden">Cargando...</span>
-      </div>
+  <div *ngIf="loading" class="select-loading-spinner">
+    <div class="spinner-border spinner-border-sm text-primary" role="status">
+      <span class="visually-hidden">Cargando...</span>
     </div>
+  </div>
 
     <div class="programadores-container" *ngIf="!loading">
       <div class="prog-card" *ngFor="let p of programadores">
