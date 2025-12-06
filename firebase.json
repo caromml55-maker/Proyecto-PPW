@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "public",
+    "public": "dist/ProyectoPPW_MerchanM/browser",
     "ignore": [
       "firebase.json",
       "**/.*",
