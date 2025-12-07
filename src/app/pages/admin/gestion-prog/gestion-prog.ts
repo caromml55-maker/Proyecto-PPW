@@ -361,12 +361,25 @@ export class GestionProg implements OnInit {
     this.isEditing = true;
   }
 
-  cancelAction() {
+  async cancelAction() {
     this.isCreating = false;
     this.isEditing = false;
 
     if (this.selectedUser) {
-      this.formData = JSON.parse(JSON.stringify(this.selectedUser));
+      const prog = await this.programadorService.getProgramador(this.selectedUser);
+
+      if (prog) {
+        this.formData = JSON.parse(JSON.stringify(prog));
+
+        if (!this.formData.redesSociales) {
+          this.formData.redesSociales = {
+            github: '',
+            linkedin: '',
+            portfolio: ''
+          };
+        }
+      }
+      this.cdref.detectChanges();
     } else {
       this.selectedUid = '';
     }

@@ -79,5 +79,6 @@ export class Academic implements OnInit{
 
     alert('Información actualizada');
     this.isEditing = false;
+    this.cdRef.detectChanges();
   }
 }
