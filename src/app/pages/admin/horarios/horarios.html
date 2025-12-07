@@ -1,5 +1,5 @@
-<div class="admin-page">
-  <header class="admin-header">
+<main class="admin-page" role="main">
+  <header class="admin-header" role="banner">
     <div class="header-content">
       <h1>Registro de Disponibilidad</h1>
       <div class="header-actions">
@@ -13,8 +13,8 @@
     <div class="selector-container">
 
       <!-- SELECTOR DE PROGRAMADOR -->
-      <label>Seleccionar programador:</label>
-      <select [(ngModel)]="selectedProgId" (change)="onProgramadorSelected()" class="form-select">
+      <label for="selectorProg">Seleccionar programador:</label>
+      <select id="selectorProg" [(ngModel)]="selectedProgId" (change)="onProgramadorSelected()" class="form-select">
         <option value="">-- Selecciona --</option>
         @for(p of programadores; track p.id){
           <option [value]="p.id">{{ p.name }} ({{ p.email }})</option>
@@ -27,13 +27,13 @@
 
     <div class="form-grid" *ngIf="selectedProgId">
       <label>Fecha:</label>
-      <input type="date" [(ngModel)]="fecha" [min]="getFechaMinima()" [max]="getFechaMaxima()" (change)="validarFormulario()">
+      <input type="date" [(ngModel)]="fecha" aria-label="Seleccionar fecha disponible" [min]="getFechaMinima()" [max]="getFechaMaxima()" (change)="validarFormulario()">
 
       <label>Hora inicio:</label>
-      <input type="time" [(ngModel)]="horaInicio" (change)="onHoraInicioChange($event)" (change)="validarFormulario()">
+      <input type="time" [(ngModel)]="horaInicio" aria-label="Hora de inicio" (change)="onHoraInicioChange($event)" (change)="validarFormulario()">
 
       <label>Hora fin:</label>
-      <input type="time" [(ngModel)]="horaFin" (change)="onHoraFinChange($event)" (change)="validarFormulario()">
+      <input type="time" [(ngModel)]="horaFin" aria-label="Hora de fin" (change)="onHoraFinChange($event)" (change)="validarFormulario()">
 
       <!-- Mensaje de error -->
       <div *ngIf="mensajeError" class="error-message">
@@ -41,7 +41,7 @@
       </div>
 
       <div class="action-buttons">
-        <button class="btn btn-success" (click)="guardarHorario()" [disabled]="!isFormValid">💾 Guardar horario</button>
+        <button class="btn btn-success" (click)="guardarHorario()" aria-label="Guardar horario" [disabled]="!isFormValid">💾 Guardar horario</button>
       </div>
     </div>
     
@@ -71,4 +71,4 @@
 
   </div>
   <router-outlet></router-outlet> 
-</div>
+</main>

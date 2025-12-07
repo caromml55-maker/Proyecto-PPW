@@ -1,42 +1,36 @@
-<div class="usuario-page">
-   <header class="top-header">
+<main class="usuario-page">
+   <header class="top-header" role="banner">
   <h2>Bienvenido a los portafolios</h2>
   <div class="header-right">
     
     <!-- Notificaciones -->
     <div class="notification-wrapper">
-      <button class="notification-btn" (click)="toggleNotifications($event)">
+      <button aria-label="Ver notificaciones" class="notification-btn" (click)="toggleNotifications($event)">
         🔔
-        <span class="badge" *ngIf="getNotificacionesNoLeidas() > 0">
+        <span class="badge" aria-live="polite" *ngIf="getNotificacionesNoLeidas() > 0">
           {{ getNotificacionesNoLeidas() > 99 ? '99+' : getNotificacionesNoLeidas() }}
         </span>
       </button>
       
       <!-- Dropdown -->
-      <div class="notification-dropdown" *ngIf="showNotifications">
+      <div class="notification-dropdown" *ngIf="showNotifications" role="dialog" aria-label="Notificaciones">
         <div class="dropdown-header">
-          <h3>
-            Notificaciones 
-            <span class="unread-count" *ngIf="getNotificacionesNoLeidas() > 0">
+          <h3>Notificaciones <span class="unread-count" *ngIf="getNotificacionesNoLeidas() > 0">
               ({{ getNotificacionesNoLeidas() }} nuevas)
             </span>
           </h3>
           <div class="dropdown-actions">
-            <button class="btn-mark-read" (click)="marcarTodasComoLeidas()">
-              ✅ Marcar todas
-            </button>
+            <button class="btn-mark-read" (click)="marcarTodasComoLeidas()" aria-label="Marcar todas como leídas">✅ Marcar todas</button>
           </div>
         </div>
         
-        <div class="notification-list">
+        <ul class="notification-list" role="list">
           <div *ngIf="notificaciones.length === 0" class="empty-notifications">
             No hay notificaciones
           </div>
           
-          <div class="notification-item" 
-               *ngFor="let n of notificaciones; let i = index"
-               [class.unread]="!n.leido"
-               (click)="onClickNotificacion(n)">
+          <li class="notification-item" role="listitem" tabindex="0" *ngFor="let n of notificaciones; let i = index"
+               [class.unread]="!n.leido" (click)="onClickNotificacion(n)"  aria-label="Notificación: {{ n.mensaje }}. Fecha {{ n.fechaHora | date:'short' }}">
             
             <div class="notification-content">
               <!-- Indicador de no leída -->
@@ -50,13 +44,13 @@
                 {{ n.fechaHora | date:'short' }}
               </small>
             </div>
-          </div>
-        </div>
+          </li>
+        </ul>
       </div>
     </div>
     
     <span class="username">{{ userName }}</span>
-    <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+    <button class="logout-btn" (click)="logout()" aria-label="Cerrar sesión">Cerrar sesión</button>
   </div>
 </header>
 
@@ -74,15 +68,12 @@
     <div class="programadores-container" *ngIf="!loading">
       <div class="prog-card" *ngFor="let p of programadores">
 
-        <img 
-          [src]="p.photoURL || 'https://ui-avatars.com/api/?name=' + p.name" 
-          class="prog-img"
-        />
+        <img [src]="p.photoURL || 'https://ui-avatars.com/api/?name=' + p.name" class="prog-img" alt="Foto del programador {{ p.name }}"/>
 
-        <div class="prog-name">{{ p.name }}</div>
-        <div class="prog-spec">{{ p.especialidad }}</div>
+        <div class="prog-name" aria-label="Nombre del programador {{ p.name }}">{{ p.name }}</div>
+        <div class="prog-spec" aria-label="Especialidad {{ p.especialidad }}">{{ p.especialidad }}</div>
 
-        <button class="btn-solicitar" (click)="verAsesoria(p)">
+        <button class="btn-solicitar" (click)="verAsesoria(p)" aria-label="Solicitar asesoría con {{ p.name }}">
           Solicitar asesoría
         </button>
 
@@ -95,25 +86,23 @@
 
     <div class="asesoria-header">
       <h3>Asesoría con {{ seleccionado.name }}</h3>
-      <button class="btn-inicio" (click)="volver()">🏠 Inicio</button>
+      <button class="btn-inicio" (click)="volver()" aria-label="inicio" >🏠 Inicio</button>
     </div>
 
     <p class="disponible">Horarios disponibles</p>
 
-    <div class="calendar-box" *ngIf="calendarReady">
-      <full-calendar 
-        [options]="calendarOptions">
+    <div class="calendar-box" *ngIf="calendarReady" role="region" aria-label="Calendario de disponibilidad"> <full-calendar [options]="calendarOptions">
       </full-calendar>
     </div>
 
 
-    <textarea placeholder="Comentario opcional" [(ngModel)]="comentario"></textarea>
+    <textarea placeholder="Comentario opcional" [(ngModel)]="comentario" aria-label="Comentario opcional"></textarea>
 
     <div class="accion-asesoria">
-      <button class="btn-agendar" [disabled]="!selectedEventId"  (click)="agendarAsesoria()">Agendar asesoría</button>
+      <button class="btn-agendar" [disabled]="!selectedEventId"  (click)="agendarAsesoria()" aria-label="Agendar asesoría">Agendar asesoría</button>
 
-      <button class="btn-cancelar" (click)="volver()">Cancelar</button>
+      <button class="btn-cancelar" (click)="volver()"  aria-label="Cancelar">Cancelar</button>
     </div>
   </div>
 
-</div>
+</main>

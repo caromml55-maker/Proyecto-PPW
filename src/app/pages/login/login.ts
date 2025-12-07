@@ -24,7 +24,7 @@ export class Login {
       const ref = doc(db, 'users', uid);
       const snap = await getDoc(ref);
 
-      let role = 'programador';
+      let role = 'user';
 
       if (!snap.exists()) {
         await setDoc(ref, {
@@ -32,7 +32,7 @@ export class Login {
           displayName: user.displayName || '',
           email: user.email || '',
           photoURL: user.photoURL || '',
-          role: 'programador',
+          role: 'user',
           createdAt: serverTimestamp(),
         });
       } else {

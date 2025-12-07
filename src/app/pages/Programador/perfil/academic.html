@@ -1,5 +1,5 @@
-<div class="admin-page">
-  <header class="admin-header">
+<main class="admin-page" role="main">
+  <header class="admin-header" role="banner">
     <div class="header-content">
       <h1>Mi Perfil Profesional</h1>
       <div class="header-actions">
@@ -18,9 +18,7 @@
 
     <!-- FOTO -->
     <div class="photo-center">
-      <img 
-        [src]="data.photoURL || 'https://ui-avatars.com/api/?name=' + (data.displayName || data.name || 'Usuario')" 
-        class="profile-img-lg" />
+      <img [src]="data.photoURL || 'https://ui-avatars.com/api/?name=' + (data.displayName || data.name || 'Usuario')" class="profile-img-lg" alt="Foto del programador" />
     </div>
 
     <div class="form-grid">
@@ -28,25 +26,25 @@
       <!-- NOMBRE -->
       <div class="form-group">
         <label>Nombre</label>
-        <input type="text" [(ngModel)]="data.displayName" [disabled]="!isEditing">
+        <input type="text" [(ngModel)]="data.displayName" aria-label="Nombre" [disabled]="!isEditing">
       </div>
 
       <!-- ESPECIALIDAD -->
       <div class="form-group">
         <label>Especialidad</label>
-        <input type="text" [(ngModel)]="data.especialidad" [disabled]="!isEditing">
+        <input type="text" [(ngModel)]="data.especialidad"  aria-label="Especialidad" [disabled]="!isEditing">
       </div>
 
       <!-- CONTACTO -->
       <div class="form-group">
-        <label>Teléfono</label>
-        <input type="text" [(ngModel)]="data.telefono" placeholder="099 999 9999" [disabled]="!isEditing">
+        <label>Contacto</label>
+        <input type="text" [(ngModel)]="data.telefono" aria-label="Teléfono" placeholder="099 999 9999" [disabled]="!isEditing">
       </div>
 
       <!-- EMAIL -->
       <div class="form-group">
         <label>Email</label>
-        <input type="email" [(ngModel)]="data.email" [disabled]="true">
+        <input type="email" aria-label="Email" [(ngModel)]="data.email" [disabled]="true">
       </div>
 
       <!-- REDES SOCIALES -->
@@ -54,26 +52,26 @@
         <label class="section-label">Redes Sociales</label>
 
         <div class="social-inputs">
-          <input type="text" [(ngModel)]="data.redesSociales.github" placeholder="gitHub URL" [disabled]="!isEditing">
-          <input type="text" [(ngModel)]="data.redesSociales.linkedin" placeholder="LinkedIn URL" [disabled]="!isEditing">
-          <input type="text" [(ngModel)]="data.redesSociales.portfolio" placeholder="Portafolio URL" [disabled]="!isEditing">
+          <input type="text" [(ngModel)]="data.redesSociales.github" aria-label="github" placeholder="gitHub URL" [disabled]="!isEditing">
+          <input type="text" [(ngModel)]="data.redesSociales.linkedin" aria-label="linkedin" placeholder="LinkedIn URL" [disabled]="!isEditing">
+          <input type="text" [(ngModel)]="data.redesSociales.portfolio" aria-label="portafolio" placeholder="Portafolio URL" [disabled]="!isEditing">
         </div>
       </div>
 
       <!-- DESCRIPCIÓN -->
       <div class="form-group full-row">
         <label>Descripción profesional</label>
-        <textarea rows="4" [(ngModel)]="data.descripcion" [disabled]="!isEditing"></textarea>
+        <textarea rows="4" [(ngModel)]="data.descripcion" aria-label="descripcion" [disabled]="!isEditing"></textarea>
       </div>
     </div>
 
     <!-- BOTONES -->
     <div class="action-buttons">
-      <button *ngIf="!isEditing" class="btn btn-warning" (click)="isEditing=true">✏️ Editar</button>
-      <button *ngIf="isEditing" class="btn btn-success" (click)="guardar()">💾 Guardar</button>
-      <button *ngIf="isEditing" class="btn btn-secondary" (click)="cancel()">Cancelar</button>
+      <button *ngIf="!isEditing" aria-label="Editar perfil" class="btn btn-warning" (click)="isEditing=true">✏️ Editar</button>
+      <button *ngIf="isEditing" aria-label="Guardar" class="btn btn-success" (click)="guardar()">💾 Guardar</button>
+      <button *ngIf="isEditing" aria-label="Cancelar edicion" class="btn btn-secondary" (click)="cancel()">Cancelar</button>
     </div>
 
   </div>
-</div>
+</main>
 <router-outlet></router-outlet>
