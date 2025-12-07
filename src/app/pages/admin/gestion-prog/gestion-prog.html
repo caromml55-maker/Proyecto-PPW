@@ -23,45 +23,140 @@
           <!-- PROGRAMADORES (ya existente, con lógica de edición) -->
           <div class="selector-block">
             <label for="selectProgramador">Programadores</label>
-            <select id="selectProgramador" [(ngModel)]="selectedProgramador"
-              (change)="onProgramadorSelected($event)"
-              [disabled]="loading"
-              class="form-select">
-              <option value="" selected disabled>-- Seleccionar programador --</option>
-              <option *ngFor="let p of programadores" [value]="p.uid">
-                {{ p.displayName || p.name }} ({{ p.email }})
-              </option>
-            </select>
+            <div class="custom-combobox" [class.active]="isOpenProg" [class.has-selection]="selectedProgramador">
+              
+              <div class="combobox-display" (click)="toggleDropdownProg()">
+                <span class="display-text">
+                  {{ getDisplayTextProg() || '-- Seleccionar programador --' }}
+                </span>
+                <span class="combobox-arrow">▼</span>
+              </div>
+
+              <div class="combobox-dropdown" *ngIf="isOpenProg">
+                <div class="dropdown-search">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="searchTextProg"
+                    (input)="filterOptionsProg()"
+                    placeholder="Buscar programador..."
+                    class="search-input"
+                    autofocus
+                  >
+                  <span class="search-icon">🔍</span>
+                </div>
+
+                <div class="dropdown-list">
+                  <div *ngIf="filteredProgramadores.length === 0" class="no-results">
+                    No se encontraron programadores
+                  </div>
+                  <div 
+                    *ngFor="let programador of filteredProgramadores" 
+                    class="dropdown-item" 
+                    [class.selected]="programador.uid === selectedProgramador" 
+                    (click)="selectProgramador(programador)"
+                  >
+                    <div class="user-info">
+                      <div class="user-name">{{ programador.displayName || programador.name }}</div>
+                      <div class="user-email">{{ programador.email }}</div>
+                    </div>
+                    <span *ngIf="programador.uid === selectedProgramador" class="checkmark">✓</span>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" [(ngModel)]="selectedProgramador">
+            </div>
           </div>
 
           <!-- ADMINISTRADORES (solo visual, sin lógica extra) -->
           <div class="selector-block">
             <label for="selectProgramador">Administradores</label>
-            <select id="selectProgramador" [(ngModel)]="selectedAdmin"
-              (change)="onAdminSelected($event)"
-              [disabled]="loading"
-              class="form-select">
-              
-              <option value="" selected disabled>-- Seleccionar administrador --</option>
-              <option *ngFor="let a of admins" [value]="a.uid">
-                {{ a.displayName || a.name }} ({{ a.email }})
-              </option>
-            </select>
+            <div class="custom-combobox" [class.active]="isOpenAdmin" [class.has-selection]="selectedAdmin">
+              <div class="combobox-display" (click)="toggleDropdownAdmin()">
+                <span class="display-text">
+                  {{ getDisplayTextAdmin() || '-- Seleccionar administrador --' }}
+                </span>
+                <span class="combobox-arrow">▼</span>
+              </div>
+
+              <div class="combobox-dropdown" *ngIf="isOpenAdmin">
+                <div class="dropdown-search">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="searchTextAdmin"
+                    (input)="filterOptionsAdmin()"
+                    placeholder="Buscar administrador..."
+                    class="search-input"
+                    autofocus
+                  >
+                  <span class="search-icon">🔍</span>
+                </div>
+
+                <div class="dropdown-list">
+                  <div *ngIf="filteredAdmins.length === 0" class="no-results">
+                    No se encontraron administradores
+                  </div>
+                  <div 
+                    *ngFor="let admin of filteredAdmins" 
+                    class="dropdown-item" 
+                    [class.selected]="admin.uid === selectedAdmin" 
+                    (click)="selectAdmin(admin)"
+                  >
+                    <div class="user-info">
+                      <div class="user-name">{{ admin.displayName || admin.name }}</div>
+                      <div class="user-email">{{ admin.email }}</div>
+                    </div>
+                    <span *ngIf="admin.uid === selectedAdmin" class="checkmark">✓</span>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" [(ngModel)]="selectedAdmin">
+            </div>
           </div>
 
           <!-- USUARIOS NORMALES (solo visual) -->
           <div class="selector-block">
             <label for="selectProgramador">Usuarios</label>
-            <select id="selectProgramador" [(ngModel)]="selectedUsuario"
-              (change)="onUsuarioSelected($event)"
-              [disabled]="loading"
-              class="form-select">
-              
-              <option value="" selected disabled>-- Seleccionar usuario --</option>
-              <option *ngFor="let u of usuarios" [value]="u.uid">
-                {{ u.displayName || u.name }} ({{ u.email }})
-              </option>
-            </select>
+            <div class="custom-combobox" [class.active]="isOpenUser" [class.has-selection]="selectedUsuario">
+              <div class="combobox-display" (click)="toggleDropdown()">
+                <span class="display-text">
+                  {{ getDisplayText() || '-- Seleccionar usuario --' }}
+                </span>
+                <span class="combobox-arrow">▼</span>
+              </div>
+
+              <div class="combobox-dropdown" *ngIf="isOpenUser">
+                <div class="dropdown-search">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="searchText"
+                    (input)="filterOptions()"
+                    placeholder="Buscar usuario..."
+                    class="search-input"
+                    autofocus
+                  >
+                  <span class="search-icon">🔍</span>
+                </div>
+
+                <div class="dropdown-list">
+                  <div *ngIf="filteredUsuarios.length === 0" class="no-results">
+                    No se encontraron usuarios
+                  </div>
+                  <div 
+                    *ngFor="let usuario of filteredUsuarios" 
+                    class="dropdown-item" 
+                    [class.selected]="usuario.uid === selectedUsuario" 
+                    (click)="selectUsuario(usuario)"
+                  >
+                    <div class="user-info">
+                      <div class="user-name">{{ usuario.displayName || usuario.name }}</div>
+                      <div class="user-email">{{ usuario.email }}</div>
+                    </div>
+                    <span *ngIf="usuario.uid === selectedUsuario" class="checkmark">✓</span>
+                  </div>
+                </div>
+              </div>
+              <input type="hidden" [(ngModel)]="selectedUsuario">
+            </div>
           </div>
         </div>
 

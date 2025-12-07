@@ -1,3 +1,8 @@
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 992px;
+$breakpoint-lg: 1200px;
+
 .admin-page {
   padding: 20px;
   background-color: #f4f6f9;
@@ -216,5 +221,602 @@ input, select, textarea {
   &:hover {
     opacity: 1;
     color: red;
+  }
+}
+
+// RESPONSIVE
+@media (max-width: $breakpoint-md - 1) {
+  .admin-page {
+    padding: 15px;
+  }
+  
+  .admin-header {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    
+    .header-content {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+      
+      h1 {
+        font-size: 1.5rem;
+        width: 100%;
+        text-align: center;
+      }
+      
+      .header-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        
+        .btn {
+          padding: 10px 18px;
+          font-size: 0.95rem;
+          flex: 1;
+          min-width: 160px;
+          justify-content: center;
+        }
+      }
+    }
+  }
+  
+  .card-detail {
+    padding: 25px;
+    margin: 0 auto;
+  }
+  
+  .section-title {
+    font-size: 1.4rem;
+  }
+  
+  .proyectos-container {
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .proyecto-card,
+  .proyecto-cardL {
+    width: calc(50% - 15px);
+    min-width: 280px;
+    min-height: 130px;
+    padding: 18px;
+    
+    .nombre-proyecto {
+      font-size: 1.4rem;
+      line-height: 1.3;
+    }
+    
+    .ver-mas {
+      font-size: 0.9rem;
+    }
+  }
+  
+  .detalle-expandido {
+    padding: 15px;
+    font-size: 0.9rem;
+    
+    p {
+      margin: 8px 0;
+      line-height: 1.4;
+    }
+    
+    a {
+      font-size: 0.85rem;
+    }
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+    
+    .full-row {
+      grid-column: 1;
+    }
+  }
+  
+  .form-group {
+    label {
+      font-size: 0.95rem;
+    }
+    
+    input, select, textarea {
+      padding: 9px;
+      font-size: 0.95rem;
+    }
+    
+    textarea {
+      min-height: 80px;
+    }
+  }
+  
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+    
+    .btn {
+      width: 100%;
+      padding: 12px;
+      justify-content: center;
+      font-size: 0.95rem;
+    }
+  }
+  
+  .btn-delete {
+    top: 8px;
+    right: 8px;
+    font-size: 18px;
+  }
+}
+
+@media (max-width: $breakpoint-sm - 1) {
+  .admin-page {
+    padding: 12px;
+  }
+  
+  .admin-header {
+    padding: 10px 15px;
+    border-radius: 6px;
+    
+    .header-content {
+      h1 {
+        font-size: 1.3rem;
+        text-align: left;
+      }
+      
+      .header-actions {
+        justify-content: flex-start;
+        
+        .btn {
+          min-width: 140px;
+          padding: 9px 15px;
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
+  
+  .card-detail {
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .separator {
+    margin-bottom: 20px;
+  }
+  
+  .proyectos-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .proyecto-card,
+  .proyecto-cardL {
+    width: 100%;
+    max-width: 400px;
+    min-height: 120px;
+    padding: 16px;
+    
+    .nombre-proyecto {
+      font-size: 1.3rem;
+      margin: 0 30px 0 0; 
+    }
+    
+    .ver-mas {
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+  }
+  
+  .no-proyectos {
+    padding: 12px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+  
+  .form-grid {
+    gap: 12px;
+  }
+  
+  .form-group {
+    label {
+      font-size: 0.9rem;
+    }
+    
+    input, select, textarea {
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  .action-buttons {
+    gap: 10px;
+    
+    .btn {
+      padding: 10px;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+
+@media (max-width: $breakpoint-xs) {
+  .admin-page {
+    padding: 10px;
+  }
+  
+  .admin-header {
+    padding: 8px 12px;
+    margin-bottom: 15px;
+    
+    .header-content {
+      gap: 10px;
+      
+      h1 {
+        font-size: 1.1rem;
+        text-align: center;
+      }
+      
+      .header-actions {
+        flex-direction: column;
+        width: 100%;
+        
+        .btn {
+          width: 100%;
+          padding: 10px;
+          font-size: 0.85rem;
+          min-width: unset;
+          justify-content: center;
+          
+          &:first-child {
+            order: 2;
+          }
+          
+          &:last-child {
+            order: 1;
+          }
+        }
+      }
+    }
+  }
+  
+  .card-detail {
+    padding: 15px;
+  }
+  
+  h2 {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+  }
+  
+  .section-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+  
+  .separator {
+    height: 1.5px;
+    margin-bottom: 15px;
+  }
+  
+  .proyecto-card,
+  .proyecto-cardL {
+    min-height: 100px;
+    padding: 15px 12px;
+    border-radius: 8px;
+    
+    .nombre-proyecto {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding-right: 25px;
+      text-align: left;
+    }
+    
+    .ver-mas {
+      font-size: 0.8rem;
+      margin-top: 8px;
+      text-align: left;
+    }
+  }
+  
+  .detalle-expandido {
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 0.85rem;
+    border-left-width: 3px;
+    
+    p {
+      margin: 6px 0;
+      line-height: 1.3;
+    }
+    
+    a {
+      font-size: 0.8rem;
+      word-break: break-all;
+    }
+  }
+  
+  .no-proyectos {
+    padding: 10px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .form-grid {
+    gap: 10px;
+  }
+  
+  .form-group {
+    label {
+      font-size: 0.85rem;
+    }
+    
+    input, select, textarea {
+      padding: 8px;
+      font-size: 0.85rem;
+      border-radius: 5px;
+    }
+    
+    textarea {
+      min-height: 70px;
+    }
+    
+    select {
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      padding-right: 35px;
+    }
+  }
+  
+  .action-buttons {
+    margin-top: 15px;
+    gap: 8px;
+    
+    .btn {
+      padding: 9px 12px;
+      font-size: 0.85rem;
+      
+      @media (max-width: 350px) {
+        &::before {
+          display: none;
+        }
+      }
+    }
+  }
+  
+  .btn-delete {
+    top: 6px;
+    right: 6px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    padding: 2px 4px;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.9);
+    }
+  }
+  
+  hr {
+    margin: 15px 0;
+  }
+}
+
+
+@media (max-height: 600px) and (orientation: landscape) {
+  .admin-page {
+    min-height: auto;
+    padding: 10px;
+  }
+  
+  .admin-header {
+    padding: 8px 15px;
+    margin-bottom: 15px;
+    
+    .header-actions {
+      .btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+    }
+  }
+  
+  .card-detail {
+    padding: 20px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .proyectos-container {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+  }
+  
+  .proyecto-card,
+  .proyecto-cardL {
+    min-height: 110px;
+    padding: 15px;
+  }
+  
+  .detalle-expandido {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .form-grid {
+    gap: 10px;
+  }
+  
+  .action-buttons {
+    margin-top: 15px;
+    
+    .btn {
+      padding: 8px 12px;
+    }
+  }
+}
+
+
+@media (min-width: $breakpoint-lg) {
+  .admin-page {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .card-detail {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+  
+  .proyectos-container {
+    justify-content: flex-start;
+  }
+  
+  .proyecto-card,
+  .proyecto-cardL {
+    width: calc(33.333% - 20px);
+    max-width: 400px;
+  }
+}
+
+@media (max-width: $breakpoint-sm) {
+  .btn, button, select, input, textarea, .ver-mas {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .ver-mas {
+    min-height: unset;
+    padding: 6px 0;
+  }
+  
+  .nombre-proyecto, .section-title, h1, h2 {
+    font-weight: 600;
+  }
+  
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+  
+  .detalle-expandido a {
+    padding: 4px 0;
+    min-height: 44px;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: $breakpoint-sm) {
+    .admin-page {
+      min-height: -webkit-fill-available;
+    }
+    
+    .card-detail {
+      max-height: 80vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .proyectos-container {
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+}
+
+
+@media (min-width: $breakpoint-sm) and (max-width: $breakpoint-md) and (orientation: portrait) {
+  .proyectos-container {
+    grid-template-columns: repeat(2, 1fr);
+    display: grid;
+  }
+  
+  .proyecto-card,
+  .proyecto-cardL {
+    width: 100%;
+  }
+  
+  .form-grid {
+    grid-template-columns: repeat(2, 1fr);
+    
+    .full-row {
+      grid-column: 1 / -1;
+    }
+  }
+  
+  .action-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    
+    .btn {
+      flex: 1;
+      min-width: 140px;
+    }
+  }
+}
+
+
+@media (max-width: $breakpoint-sm) {
+  .no-proyectos {
+    text-align: center;
+    padding: 20px;
+    
+    &::before {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+  }
+}
+
+
+@media (max-width: 360px) {
+  .admin-header {
+    .header-content {
+      h1 {
+        font-size: 1rem;
+      }
+    }
+    
+    .header-actions {
+      .btn {
+        font-size: 0.8rem;
+        padding: 8px;
+      }
+    }
+  }
+  
+  .section-title {
+    font-size: 1rem;
+  }
+  
+  .proyecto-card,
+  .proyecto-cardL {
+    .nombre-proyecto {
+      font-size: 1rem;
+    }
+  }
+  
+  .action-buttons {
+    .btn {
+      font-size: 0.8rem;
+      padding: 8px 10px;
+    }
+  }
+  
+  .btn::before {
+    display: none !important;
   }
 }

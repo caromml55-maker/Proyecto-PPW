@@ -85,3 +85,279 @@
     margin-right: 12px;
   }
 }
+
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 992px;
+$breakpoint-lg: 1200px;
+
+// Responsive para móviles pequeños
+@media (max-width: $breakpoint-xs) {
+  
+  .login-card {
+    width: 95%;
+    height: auto;
+    min-height: 85vh;
+    padding: 20px 15px;
+    margin: 10px;
+  }
+  
+  .login-avatar img {
+    width: 100px;
+    margin-bottom: 20px;
+  }
+  
+  .titulo-login {
+    font-size: 32px;
+    margin-bottom: 10px;
+    line-height: 1.2;
+  }
+  
+  .frase {
+    font-size: 16px;
+    line-height: 1.3;
+    margin-bottom: 12px;
+    padding: 0 5px;
+  }
+  
+  .sub-frase {
+    font-size: 14px;
+    margin-bottom: 25px;
+    padding: 0 5px;
+  }
+  
+  .login-btn {
+    width: 90%;
+    font-size: 16px;
+    padding: 12px 15px;
+    
+    .google-icon {
+      width: 20px;
+      margin-right: 8px;
+    }
+  }
+}
+
+
+@media (min-width: $breakpoint-xs) and (max-width: $breakpoint-sm) {
+  .login-card {
+      width: 90%;
+      height: auto;
+      min-height: 80vh;
+      padding: 30px 25px;
+      margin: 20px;
+    }
+
+    .login-avatar img {
+      width: 120px;
+      margin-bottom: 25px;
+    }
+
+    .titulo-login {
+      font-size: 42px;
+      margin-bottom: 15px;
+    }
+
+    .frase {
+      font-size: 18px;
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
+
+    .sub-frase {
+      font-size: 16px;
+      margin-bottom: 30px;
+    }
+
+    .login-btn {
+      width: 85%;
+      font-size: 18px;
+      padding: 14px 20px;
+      
+      .google-icon {
+        width: 22px;
+        margin-right: 10px;
+      }
+    }
+  }
+
+  // Responsive para tablets
+  @media (min-width: $breakpoint-sm) and (max-width: $breakpoint-md) {
+    .login-card {
+      width: 85%;
+      max-width: 700px;
+      height: auto;
+      min-height: 75vh;
+      padding: 40px 50px;
+    }
+
+    .login-avatar img {
+      width: 140px;
+    }
+
+    .titulo-login {
+      font-size: 50px;
+    }
+
+    .frase {
+      font-size: 20px;
+    }
+
+    .sub-frase {
+      font-size: 18px;
+    }
+
+    .login-btn {
+      width: 70%;
+      font-size: 20px;
+      
+      .google-icon {
+        width: 24px;
+      }
+    }
+  }
+
+  // Responsive para laptops pequeñas
+  @media (min-width: $breakpoint-md) and (max-width: $breakpoint-lg) {
+    .login-card {
+      width: 80%;
+      max-width: 800px;
+      padding: 40px 60px;
+    }
+
+    .titulo-login {
+      font-size: 55px;
+    }
+
+    .frase {
+      font-size: 22px;
+    }
+
+    .login-btn {
+      width: 65%;
+    }
+  }
+
+  // Para dispositivos en orientación horizontal (landscape)
+  @media (max-height: 600px) and (orientation: landscape) {
+    .login-card {
+      height: auto;
+      min-height: 90vh;
+      padding: 20px 40px;
+      margin: 20px 0;
+      overflow-y: auto;
+    }
+
+    .login-avatar img {
+      width: 80px;
+      margin-bottom: 15px;
+    }
+
+    .titulo-login {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    .frase {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .sub-frase {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .login-btn {
+      width: 60%;
+      font-size: 16px;
+      padding: 10px 15px;
+    }
+  }
+
+  // Para pantallas muy grandes (4K, etc)
+  @media (min-width: 1920px) {
+    .login-card {
+      width: 1000px;
+      height: 850px;
+      padding: 60px 80px;
+    }
+
+    .login-avatar img {
+      width: 180px;
+    }
+
+    .titulo-login {
+      font-size: 72px;
+    }
+
+    .frase {
+      font-size: 28px;
+    }
+
+    .sub-frase {
+      font-size: 24px;
+    }
+
+    .login-btn {
+      width: 500px;
+      font-size: 28px;
+      padding: 16px 24px;
+      
+      .google-icon {
+        width: 32px;
+      }
+    }
+  }
+
+// Clases adicionales para mejor UX en móviles
+@media (max-width: $breakpoint-sm) {
+  // Mejorar táctil en móviles
+  .login-btn {
+    min-height: 48px; // Tamaño mínimo para táctil
+  }
+  
+  // Asegurar que los textos no se desborden
+  .titulo-login, .frase, .sub-frase {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+// Corrección para Safari en iOS
+@supports (-webkit-touch-callout: none) {
+  .login {
+    height: -webkit-fill-available;
+    
+    &::before {
+      height: -webkit-fill-available;
+    }
+  }
+}
+
+// Para evitar zoom en inputs en iOS
+@media (max-width: $breakpoint-sm) {
+  input, select, textarea {
+    font-size: 16px !important; // Previene zoom automático en iOS
+  }
+}
+
+// Ajustes para modo oscuro del sistema
+@media (prefers-color-scheme: dark) {
+  .login-card {
+    background: rgba(52, 75, 107, 0.75);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  }
+  
+  .titulo-login {
+    color: #e3f2fd;
+  }
+  
+  .frase {
+    color: #bbdefb;
+  }
+  
+  .sub-frase {
+    color: #e0e0e0;
+  }
+}

@@ -9,5 +9,5 @@ import { RouterOutlet, RouterLink } from '@angular/router';
   styleUrls: ['./app.scss']
 })
 export class App {
-  title = "Proyecto de Página Web - Portafolio";
+  title = "Proyecto de Platafotmas Web - Portafolio";
 }

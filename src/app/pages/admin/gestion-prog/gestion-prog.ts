@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { ProgramadorService } from '../../../services/programador.service';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
 import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
+import { UUID } from 'crypto';
 
 @Component({
   selector: 'app-gestion-prog',
@@ -21,9 +22,22 @@ export class GestionProg implements OnInit {
   selectedUid: string | null = null;
   selectedUser: any = null;
   selectedProgramador: any = null;
+  filteredProgramadores: any[] = [];
+  searchTextProg: string = '';
+  isOpenProg: boolean = false;
+  loadingProg: boolean = false;
 
   selectedAdmin: string | null = null;
-  selectedUsuario: string | null = null; 
+  filteredAdmins: any[] = [];
+  searchTextAdmin: string = '';
+  isOpenAdmin: boolean = false;
+  loadingAdmin: boolean = false;
+
+  selectedUsuario: string | null = null;
+  filteredUsuarios: any[] = [];
+  searchText: string = '';
+  isOpenUser: boolean = false;
+  loadingUser: boolean = false;
 
   loading = false;
   isCreating = false; 
@@ -59,6 +73,10 @@ export class GestionProg implements OnInit {
         this.loadAdmins(),
         this.loadUsers()
       ]);
+
+      this.filteredUsuarios = [...this.usuarios];
+      this.filteredProgramadores = [...this.programadores];
+      this.filteredAdmins = [...this.admins];
       
       this.loading = false;
       this.cdref.detectChanges();
@@ -67,6 +85,152 @@ export class GestionProg implements OnInit {
       console.error('Error en ngOnInit:', error);
       this.loading = false;
       this.cdref.detectChanges();
+    }
+  }
+
+  // Texto a mostrar en el combobox
+  getDisplayTextProg(): string {
+    if (!this.selectedProgramador) return '';
+    const programador = this.programadores.find(p => p.uid === this.selectedProgramador);
+    if (!programador) return '';
+    return `${programador.displayName || programador.name} (${programador.email})`;
+  }
+
+  // Texto a mostrar en el combobox
+  getDisplayTextAdmin(): string {
+    if (!this.selectedAdmin) return '';
+    const admin = this.admins.find(a => a.uid === this.selectedAdmin);
+    if (!admin) return '';
+    return `${admin.displayName || admin.name} (${admin.email})`;
+  }
+
+  // Texto a mostrar en el combobox
+  getDisplayText(): string {
+    if (!this.selectedUsuario) return '';
+    const usuario = this.usuarios.find(u => u.uid === this.selectedUsuario);
+    if (!usuario) return '';
+    return `${usuario.displayName || usuario.name} (${usuario.email})`;
+  }
+
+  // Abrir/cerrar dropdown
+  toggleDropdownProg() {
+    if (this.loadingProg) return;
+    this.isOpenProg = !this.isOpenProg;
+    if (this.isOpenProg) {
+      this.searchTextProg = '';
+      this.filteredProgramadores = [...this.programadores];
+      this.isOpenAdmin = false;
+      this.isOpenUser = false;
+    }
+  }
+
+  // Abrir/cerrar dropdown
+  toggleDropdownAdmin() {
+    if (this.loadingAdmin) return;
+    this.isOpenAdmin = !this.isOpenAdmin;
+    if (this.isOpenAdmin) {
+      this.searchTextAdmin = '';
+      this.filteredAdmins = [...this.admins];
+      this.isOpenProg = false;
+      this.isOpenUser = false;
+    }
+  }
+  
+  // Abrir/cerrar dropdown
+  toggleDropdown() {
+    if (this.loadingUser) return;
+    this.isOpenUser = !this.isOpenUser;
+    if (this.isOpenUser) {
+      this.searchText = '';
+      this.filteredUsuarios = [...this.usuarios];
+      this.isOpenAdmin = false;
+      this.isOpenProg = false;
+    }
+  }
+
+  // Filtrar opciones
+  filterOptionsProg() {
+    if (!this.searchTextProg.trim()) {
+      this.filteredProgramadores = [...this.programadores];
+      return;
+    }
+    
+    const term = this.searchTextProg.toLowerCase().trim();
+    this.filteredProgramadores = this.programadores.filter(p => {
+      const name = (p.displayName || p.name || '').toLowerCase();
+      const email = (p.email || '').toLowerCase();
+      return name.includes(term) || email.includes(term);
+    });
+  }
+
+  // Filtrar opciones
+  filterOptionsAdmin() {
+    if (!this.searchTextAdmin.trim()) {
+      this.filteredAdmins = [...this.admins];
+      return;
+    }
+    
+    const term = this.searchTextAdmin.toLowerCase().trim();
+    this.filteredAdmins = this.admins.filter(a => {
+      const name = (a.displayName || a.name || '').toLowerCase();
+      const email = (a.email || '').toLowerCase();
+      return name.includes(term) || email.includes(term);
+    });
+  }
+  
+  // Filtrar opciones
+  filterOptions() {
+    if (!this.searchText.trim()) {
+      this.filteredUsuarios = [...this.usuarios];
+      return;
+    }
+    
+    const term = this.searchText.toLowerCase().trim();
+    this.filteredUsuarios = this.usuarios.filter(u => {
+      const name = (u.displayName || u.name || '').toLowerCase();
+      const email = (u.email || '').toLowerCase();
+      return name.includes(term) || email.includes(term);
+    });
+  }
+
+  // Seleccionar programador
+  selectProgramador(programador: any) {
+    this.selectedProgramador = programador.uid;
+    this.isOpenProg = false;
+    this.searchTextProg = '';
+    
+    console.log('Programador seleccionado:', programador.uid);
+    this.onProgramadorSelected(programador.uid);
+  }
+
+  // Seleccionar programador
+  selectAdmin(admin: any) {
+    this.selectedAdmin = admin.uid;
+    this.isOpenAdmin = false;
+    this.searchTextAdmin = '';
+    
+    console.log('Administrador seleccionado:', admin.uid);
+    this.onAdminSelected(admin.uid);
+  }
+  
+  // Seleccionar usuario
+  selectUsuario(usuario: any) {
+    this.selectedUsuario = usuario.uid;
+    this.isOpenUser = false;
+    this.searchText = '';
+    
+    console.log('Usuario seleccionado:', usuario.uid);
+    this.onUsuarioSelected(usuario.uid);
+  }
+  
+  // Cerrar al hacer clic fuera
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.custom-combobox')) {
+      this.isOpenUser = false;
+      this.isOpenProg = false;
+      this.isOpenAdmin = false;
     }
   }
 
@@ -81,9 +245,8 @@ export class GestionProg implements OnInit {
     }
   }
 
-  async onProgramadorSelected(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const uid = selectElement.value;
+  async onProgramadorSelected(selectElement: UUID) {
+    const uid = selectElement;
     if (!uid) return;
     
     this.selectedUser = this.selectedProgramador
@@ -112,9 +275,8 @@ export class GestionProg implements OnInit {
     this.cdref.detectChanges();
   }
 
-  async onAdminSelected(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const uid = selectElement.value;
+  async onAdminSelected(selectElement: UUID) {
+    const uid = selectElement;
     if (!uid) return;
     
     this.selectedUser = this.selectedAdmin;
@@ -143,9 +305,8 @@ export class GestionProg implements OnInit {
     this.cdref.detectChanges();
   }
 
-  async onUsuarioSelected(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    const uid = selectElement.value;
+  async onUsuarioSelected(selectElement: UUID) {
+    const uid = selectElement;
     if (!uid) return;
     
     this.selectedUser = this.selectedUsuario;
