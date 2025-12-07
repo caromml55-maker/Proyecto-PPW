@@ -21,6 +21,7 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 18px;
 
     &:hover {
       background-color: #c0392b;
@@ -65,3 +66,11 @@
     font-size: 18px;
   }
 }
+
+.admin-top{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top:10px;
+}
+

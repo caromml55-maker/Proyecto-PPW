@@ -95,14 +95,15 @@
     margin-right: auto;
 
     .btn {
-      padding: 0.75rem 1.5rem;
+      padding: 12px 24px;
       border: none;
       border-radius: 6px;
       background: #28a745;
       color: white;
       font-weight: 600;
+      font-size: 1rem;
       cursor: pointer;
-      transition: background 0.2s;
+      transition:  transform 0.1s, box-shadow 0.2s;
 
       &:hover {
         background: #218838;
@@ -117,6 +118,17 @@
       }
     }
   }
+}
+.btn-secondary { 
+  background-color: #6c757d; 
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  transition: transform 0.1s, box-shadow 0.2s;
 }
 
 @media (max-width: 768px) {

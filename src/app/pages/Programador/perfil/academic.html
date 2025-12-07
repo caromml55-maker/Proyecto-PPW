@@ -26,19 +26,19 @@
       <!-- NOMBRE -->
       <div class="form-group">
         <label>Nombre</label>
-        <input type="text" [(ngModel)]="data.displayName" aria-label="Nombre" [disabled]="!isEditing">
+        <input type="text" [(ngModel)]="data.displayName" aria-label="Nombre" [disabled]="!isEditing" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" maxlength="40" title="Solo letras y espacios">
       </div>
 
       <!-- ESPECIALIDAD -->
       <div class="form-group">
         <label>Especialidad</label>
-        <input type="text" [(ngModel)]="data.especialidad"  aria-label="Especialidad" [disabled]="!isEditing">
+        <input type="text" [(ngModel)]="data.especialidad"  aria-label="Especialidad" [disabled]="!isEditing" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" maxlength="30" title="Solo letras">
       </div>
 
       <!-- CONTACTO -->
       <div class="form-group">
         <label>Contacto</label>
-        <input type="text" [(ngModel)]="data.telefono" aria-label="Teléfono" placeholder="099 999 9999" [disabled]="!isEditing">
+        <input type="text" [(ngModel)]="data.telefono" aria-label="Teléfono" placeholder="099 999 9999" [disabled]="!isEditing" pattern="[0-9]+" maxlength="13" minlength="10" title="Solo números, mínimo 10, máximo 13">
       </div>
 
       <!-- EMAIL -->
@@ -52,9 +52,9 @@
         <label class="section-label">Redes Sociales</label>
 
         <div class="social-inputs">
-          <input type="text" [(ngModel)]="data.redesSociales.github" aria-label="github" placeholder="gitHub URL" [disabled]="!isEditing">
-          <input type="text" [(ngModel)]="data.redesSociales.linkedin" aria-label="linkedin" placeholder="LinkedIn URL" [disabled]="!isEditing">
-          <input type="text" [(ngModel)]="data.redesSociales.portfolio" aria-label="portafolio" placeholder="Portafolio URL" [disabled]="!isEditing">
+          <input type="text" [(ngModel)]="data.redesSociales.github" aria-label="github" placeholder="gitHub URL" [disabled]="!isEditing" pattern="https?://.+" title="Debe ser una URL válida (http o https)">
+          <input type="text" [(ngModel)]="data.redesSociales.linkedin" aria-label="linkedin" placeholder="LinkedIn URL" [disabled]="!isEditing" pattern="https?://.+" title="Debe ser una URL válida (http o https)">
+          <input type="text" [(ngModel)]="data.redesSociales.portfolio" aria-label="portafolio" placeholder="Portafolio URL" [disabled]="!isEditing" >
         </div>
       </div>
 

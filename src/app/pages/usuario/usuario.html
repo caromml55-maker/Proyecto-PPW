@@ -55,7 +55,8 @@
 </header>
 
 
-  <div *ngIf="!seleccionado" class="vista-programadores">
+  <div *ngIf="!seleccionado && !viendoPortafolios" class="vista-programadores">
+
 
   <h3 class="title">Explorar programadores</h3>
 
@@ -73,20 +74,18 @@
         <div class="prog-name" aria-label="Nombre del programador {{ p.name }}">{{ p.name }}</div>
         <div class="prog-spec" aria-label="Especialidad {{ p.especialidad }}">{{ p.especialidad }}</div>
 
-        <button class="btn-solicitar" (click)="verAsesoria(p)" aria-label="Solicitar asesoría con {{ p.name }}">
-          Solicitar asesoría
-        </button>
-
+        <button class="btn-solicitar" (click)="verAsesoria(p)" aria-label="Solicitar asesoría con {{ p.name }}"> Solicitar asesoría</button>
+        <button class="btn-portafolios" (click)="verPortafolios(p)" aria-label="Ver portafolios del programador {{ p.name }}"> Ver portafolios </button>
       </div>
     </div>
 
   </div>
 
-  <div *ngIf="seleccionado" class="vista-asesoria">
+  <div *ngIf="seleccionado && !viendoPortafolios" class="vista-asesoria">
 
     <div class="asesoria-header">
       <h3>Asesoría con {{ seleccionado.name }}</h3>
-      <button class="btn-inicio" (click)="volver()" aria-label="inicio" >🏠 Inicio</button>
+      <button class="btn-inicio" (click)="volver()" aria-label="inicio" >Inicio</button>
     </div>
 
     <p class="disponible">Horarios disponibles</p>
@@ -105,4 +104,103 @@
     </div>
   </div>
 
+            <!--     PORTAFOLIOS PROGRAMADOR     -->
+            <!-- =============================== -->
+
+  <div *ngIf="viendoPortafolios" class="vista-portafolios">
+
+  <header class="portafolio-header" role="heading" aria-level="2">
+      <h2>Portafolios de {{ seleccionado.name }}</h2>
+
+      <button class="btn-cerrar" (click)="cerrarPortafolios()" aria-label="Cerrar portafolios y volver">Inicio </button>
+  </header>
+
+  <p class="sub-info" aria-live="polite">
+     Total de proyectos: {{ (portafoliosAcademicos?.length || 0) + (portafoliosLaborales?.length || 0) }}
+  </p>
+
+
+
+  <!-- =============================== -->
+  <!--          ACADÉMICOS            -->
+  <!-- =============================== -->
+  <section *ngIf="portafoliosAcademicos.length > 0"
+           class="categoria"
+           role="region"
+           aria-labelledby="titulo-acad">
+
+      <h3 id="titulo-acad">Proyectos Académicos</h3>
+
+      <div class="lista-portafolios">
+          <article class="port-card"
+                   *ngFor="let item of portafoliosAcademicos"
+                   role="article">
+
+              <h4>{{ item.nombre }}</h4>
+
+              <p><strong>Tipo:</strong> {{ item.tipo }}</p>
+
+              <p><strong>Tecnologías:</strong> {{ item.tecnologias }}</p>
+
+              <p class="descripcion">{{ item.descripcion }}</p>
+
+              <a *ngIf="item.urlRepositorio"
+                 class="enlace-repo"
+                 [href]="item.urlRepositorio"
+                 target="_blank"
+                 aria-label="Abrir repositorio en nueva pestaña">
+                  🔗 Ver repositorio
+              </a>
+          </article>
+      </div>
+  </section>
+
+
+
+  <!-- =============================== -->
+  <!--          LABORALES             -->
+  <!-- =============================== -->
+  <section *ngIf="portafoliosLaborales.length > 0"
+           class="categoria"
+           role="region"
+           aria-labelledby="titulo-lab">
+
+      <h3 id="titulo-lab">Proyectos Laborales</h3>
+
+      <div class="lista-portafolios">
+
+          <article class="port-card"
+                   *ngFor="let item of portafoliosLaborales"
+                   role="article">
+
+              <h4>{{ item.nombre }}</h4>
+
+              <p><strong>Tipo:</strong> {{ item.tipo }}</p>
+
+              <p><strong>Tecnologías:</strong> {{ item.tecnologias }}</p>
+
+              <p class="descripcion">{{ item.descripcion }}</p>
+
+              <a *ngIf="item.urlRepositorio"
+                 class="enlace-repo"
+                 [href]="item.urlRepositorio"
+                 target="_blank"
+                 aria-label="Abrir repositorio laboral en nueva pestaña">
+                  🔗 Ver repositorio
+              </a>
+          </article>
+
+      </div>
+  </section>
+
+
+
+  <!-- NINGUN PORTAFOLIO -->
+  <p *ngIf="(portafoliosAcademicos?.length||0) ===0 && (portafoliosLaborales?.length||0) ===0"
+     class="no-port"
+     role="alert">
+      No hay portafolios registrados.
+  </p>
+
+</div>
 </main>

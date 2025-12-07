@@ -1,10 +1,12 @@
 <div class="dashboard-programador">
-  <h1>Bienvenido a tu portafolio</h1>
+   <header class="panel-header" role="banner">
+     <div class="header-top">
+      <h1 id="panelTitle">Bienvenido a tu portafolio</h1>
 
-  <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+      <button class="logout-btn" (click)="logout()" aria-label="Cerrar sesión">Cerrar sesión</button>
+</div>
 
-
-  <nav>
+  <nav role="navigation" aria-label="Menú principal">
   <a routerLink="/program/academic" routerLinkActive="active">Perfil</a>  |
   <a routerLink="/program/lab" routerLinkActive="active">Portafolios</a>  |
   <a routerLink="/program/asesoria" routerLinkActive="active">Asesorías</a> |
@@ -13,8 +15,8 @@
 
 <br>
 
-
-  <router-outlet></router-outlet>
+</header>
+  <router-outlet aria-labelledby="panelTitle"></router-outlet>
   
 </div>
 

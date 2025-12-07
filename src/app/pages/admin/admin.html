@@ -1,10 +1,12 @@
 <div class="admin-container">
-
-  <h1>Panel de Administrador</h1>
-  <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+  <header class="admin-top">
+      <h1>Panel de Administrador</h1>
+  <button class="logout-btn"  aria-label="Cerrar sesión" (click)="logout()">Cerrar sesión</button>
   <br>
+  </header>
+  
   <hr>
-  <nav class="menu">
+  <nav class="menu" aria-label="Menú principal de administrador">
     <a routerLink="/gestProg" routerLinkActive="active"> Programadores</a> |
     <a routerLink="/horarios" routerLinkActive="active"> Horarios</a> 
   </nav>

@@ -1,7 +1,7 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { getAuth, signOut } from 'firebase/auth';
-import { addDoc, collection, doc, getDocs, getFirestore, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, where } from 'firebase/firestore';
 import { FormsModule } from '@angular/forms';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { RouterModule } from '@angular/router';
@@ -26,6 +26,11 @@ export class Usuario implements OnInit {
   notificaciones: any[] = [];
   eventoSeleccionado: any = null;
   showNotifications: boolean = false;
+
+  viendoPortafolios = false;
+  portafoliosAcademicos:any[] = [];
+  portafoliosLaborales:any[] = [];
+
 
 
   eventosCalendar: any[] = [];
@@ -197,6 +202,24 @@ export class Usuario implements OnInit {
     this.comentario = "";
   }
 
+  async verPortafolios(p:any){
+    this.seleccionado = p;
+    this.viendoPortafolios = true;
+
+    const db = getFirestore();
+    const ref = collection(db, "portafolios");
+    const q = query(ref, where("uidProgramador","==",p.uid))
+    const snap = await getDocs(q);
+
+    snap.forEach(doc=>{
+          const data:any = doc.data();
+          this.portafoliosAcademicos = data.proyectosAcademicos || [];
+          this.portafoliosLaborales = data.proyectosLaborales  || [];
+      })
+    
+  }
+
+
   async cargarHorarios(uid:string) {
 
     const db = getFirestore();
@@ -365,4 +388,10 @@ export class Usuario implements OnInit {
       return 'Hora inválida';
     }
   }
+
+  cerrarPortafolios(){
+  this.viendoPortafolios = false;
+   this.seleccionado = null;
+}
+
 }
