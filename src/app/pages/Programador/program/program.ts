@@ -13,10 +13,12 @@ import { getAuth, signOut } from 'firebase/auth';
 })
 export class Program implements OnInit {
   user: any = null;
+  userName = "";
 
   ngOnInit(): void {
     const auth = getAuth();
     this.user = auth.currentUser;
+    this.userName = auth.currentUser?.displayName || "";
   }
 
   

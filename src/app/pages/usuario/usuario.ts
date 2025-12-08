@@ -31,8 +31,6 @@ export class Usuario implements OnInit {
   portafoliosAcademicos:any[] = [];
   portafoliosLaborales:any[] = [];
 
-
-
   eventosCalendar: any[] = [];
   horaSeleccionada = "";
   comentario = "";
@@ -40,6 +38,7 @@ export class Usuario implements OnInit {
   selectedEventId: string | null = null;
   calendarReady = false;
   loading = false;
+  loadingPortafolios = false;
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -202,7 +201,8 @@ export class Usuario implements OnInit {
     this.comentario = "";
   }
 
-  async verPortafolios(p:any){
+  async verPortafolios(p:any) {
+    this.loadingPortafolios = true;
     this.seleccionado = p;
     this.viendoPortafolios = true;
 
@@ -211,12 +211,18 @@ export class Usuario implements OnInit {
     const q = query(ref, where("uidProgramador","==",p.uid))
     const snap = await getDocs(q);
 
-    snap.forEach(doc=>{
-          const data:any = doc.data();
-          this.portafoliosAcademicos = data.proyectosAcademicos || [];
-          this.portafoliosLaborales = data.proyectosLaborales  || [];
-      })
-    
+    if (snap.empty) {
+      this.portafoliosAcademicos = [];
+      this.portafoliosLaborales = [];
+    } else {
+      snap.forEach(doc => {
+        const data: any = doc.data();
+        this.portafoliosAcademicos = data.proyectosAcademicos || [];
+        this.portafoliosLaborales = data.proyectosLaborales || [];
+      });
+    }
+    this.loadingPortafolios = false;
+    this.cdRef.detectChanges();
   }
 
 

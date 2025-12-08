@@ -107,7 +107,7 @@
             <!--     PORTAFOLIOS PROGRAMADOR     -->
             <!-- =============================== -->
 
-  <div *ngIf="viendoPortafolios" class="vista-portafolios">
+  <div *ngIf="!loadingPortafolios && viendoPortafolios" class="vista-portafolios">
 
   <header class="portafolio-header" role="heading" aria-level="2">
       <h2>Portafolios de {{ seleccionado.name }}</h2>
@@ -203,4 +203,9 @@
   </p>
 
 </div>
+
+<!-- CARGANDO PORTAFOLIOS -->
+  <p *ngIf="loadingPortafolios" class="no-port" role="alert">
+    Cargando...
+  </p>
 </main>

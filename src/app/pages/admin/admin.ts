@@ -18,6 +18,7 @@ export class Admin implements OnInit {
 
   section: string = 'programadores'; 
   programadores: Array<AppUser & { id: string }> = [];
+  userName = "";
 
   constructor(private router: Router) {}
 
@@ -28,6 +29,8 @@ export class Admin implements OnInit {
   cargarProgramadores() {
     const db = getFirestore();
     const ref = collection(db, 'users');
+    const auth = getAuth();
+    this.userName = auth.currentUser?.displayName || "";
 
     onSnapshot(ref, (snapshot) => {
       this.programadores = snapshot.docs
