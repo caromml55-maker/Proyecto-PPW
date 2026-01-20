@@ -34,7 +34,7 @@ import { RouterModule } from "@angular/router";
     isFormValid: boolean = false;
     mensajeError: string = '';
     
-    // Configuración corregida del calendario
+    
     calendarOptions: CalendarOptions = {
       plugins: [dayGridPlugin, interactionPlugin],
       initialView: 'dayGridMonth',
@@ -49,7 +49,7 @@ import { RouterModule } from "@angular/router";
       selectable: false,
       weekends: true,
       eventColor: '#3788d8',
-      eventClick: this.handleEventClick.bind(this) // ← Esta línea habilita el clic en eventos
+      eventClick: this.handleEventClick.bind(this) 
     };
     
     constructor(private horarioService: HorarioService, private cdRef: ChangeDetectorRef) {}
@@ -57,7 +57,7 @@ import { RouterModule } from "@angular/router";
     ngOnInit(): void {
       this.cargarProgramadores();
     }
-
+/*
     async cargarProgramadores() {
       const db = getFirestore();
       const ref = collection(db, "users");
@@ -92,15 +92,35 @@ import { RouterModule } from "@angular/router";
     }
 
     // Cargar horarios del programador seleccionado
+    /*
     async cargarHorariosProgramador(programadorId: string) {
       try {
-        this.horarios = await this.horarioService.getHorarioByProgramador(programadorId);
+       // this.horarios = await this.horarioService.getHorarioByProgramador(programadorId);
+       this.horarioService.getAllHorarioAPI().subscribe(data=>{ this.horarios = data.filter(h=>h.programadorId === programadorId);
+      this.actualizarEventosCalendario();
+});
+
         this.actualizarEventosCalendario();
       } catch (error) {
         console.error('Error cargando horarios:', error);
         alert('Error al cargar los horarios del programador');
       }
     }
+
+    async cargarHorariosProgramador(programadorId: string) {
+      this.horarioService.getAllHorarioAPI()
+      .subscribe({
+        next: (data)=>{
+          this.horarios = data.filter(h=>h.programadorId === programadorId);
+          this.actualizarEventosCalendario();
+        },
+        error: (err)=>{
+          console.error(err);
+          alert("Error cargando horarios desde API");
+        }
+      });
+    }
+
 
     // Actualizar eventos del calendario
     actualizarEventosCalendario() {
@@ -146,7 +166,7 @@ import { RouterModule } from "@angular/router";
         alert('Error al eliminar el horario');
       }
     }
-
+    /*
     async guardarHorario() {
     if (!this.selectedProgId || !this.fecha || !this.horaInicio || !this.horaFin) {
       alert("Completa todos los campos");
@@ -184,6 +204,145 @@ import { RouterModule } from "@angular/router";
       alert("Error guardando horario. Inténtalo de nuevo.");
     } 
   }
+    guardarHorario() {
+
+  if (!this.selectedProgId || !this.fecha || !this.horaInicio || !this.horaFin) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  const horario: Horario = {
+    programadorId: this.selectedProgId,
+    fecha: this.fecha,
+    inicio: this.horaInicio,
+    fin: this.horaFin
+  };
+
+  this.horarioService.guardarHorarioAPI(horario)
+  .subscribe({
+    next: ()=>{
+      alert("Horario guardado correctamente (API)");
+      this.onProgramadorSelected();
+      this.fecha="";
+      this.horaInicio="";
+      this.horaFin="";
+    },
+    error: ()=>{
+      alert("Error guardando horario");
+    }
+  });
+}*/
+
+
+  // ===============================
+  // CARGAR PROGRAMADORES (API)
+  // ===============================
+  cargarProgramadores() {
+    this.horarioService.getProgramadores().subscribe({
+      next: data => this.programadores = data,
+      error: err => alert(err.message)
+    });
+  }
+
+  // ===============================
+  // CUANDO SELECCIONA PROGRAMADOR
+  // ===============================
+  onProgramadorSelected() {
+
+    if (!this.selectedProgId) {
+      this.horarios = [];
+      this.calendarEvents = [];
+      this.actualizarCalendario();
+      return;
+    }
+
+    this.horarioService
+      .getHorarioByProgramadorAPI(this.selectedProgId)
+      .subscribe({
+        next: data => {
+          this.horarios = data;
+          this.actualizarEventosCalendario();
+        },
+        error: err => alert(err.message)
+      });
+  }
+
+  // ===============================
+  // GUARDAR HORARIO
+  // ===============================
+  guardarHorario() {
+
+    this.validarFormulario();
+    if (!this.isFormValid) return;
+
+    const horario: Horario = {
+      programadorId: this.selectedProgId,
+      fecha: this.fecha,
+      inicio: this.horaInicio,
+      fin: this.horaFin
+    };
+
+    this.horarioService.guardarHorarioAPI(horario)
+      .subscribe({
+        next: () => {
+          alert("Horario guardado");
+
+          this.onProgramadorSelected();
+
+          this.fecha = "";
+          this.horaInicio = "";
+          this.horaFin = "";
+        },
+        error: err => alert(err.message)
+      });
+  }
+
+  // ===============================
+  // ELIMINAR
+  // ===============================
+  eliminarHorario(id: string) {
+
+    this.horarioService.eliminarHorarioAPI(id)
+      .subscribe({
+        next: () => {
+          alert("Eliminado");
+          this.onProgramadorSelected();
+        },
+        error: err => alert(err.message)
+      });
+  }
+
+  handleEventClick(info: any) {
+
+    if (confirm("¿Eliminar horario?")) {
+      this.eliminarHorario(info.event.id);
+    }
+  }
+
+  // ===============================
+  // CALENDARIO
+  // ===============================
+  actualizarEventosCalendario() {
+
+    this.calendarEvents = this.horarios.map(h => ({
+      id: h.id,
+      title: `Disponible ${h.inicio}-${h.fin}`,
+      date: h.fecha
+    }));
+
+    this.actualizarCalendario();
+  }
+
+  actualizarCalendario() {
+
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      events: [...this.calendarEvents]
+    };
+
+    this.cdRef.detectChanges();
+  }
+
 
   // Obtener nombre del programador seleccionado
   getNombreProgramador(): string {

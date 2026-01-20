@@ -26,19 +26,19 @@
       <!-- NOMBRE -->
       <div class="form-group">
         <label>Nombre</label>
-        <input type="text" [(ngModel)]="data.displayName" aria-label="Nombre" [disabled]="!isEditing" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" maxlength="40" title="Solo letras y espacios">
+        <input type="text" [(ngModel)]="data.displayName" aria-label="Nombre" [disabled]="!isEditing" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s\']+" maxlength="40" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
       </div>
 
       <!-- ESPECIALIDAD -->
       <div class="form-group">
         <label>Especialidad</label>
-        <input type="text" [(ngModel)]="data.especialidad"  aria-label="Especialidad" [disabled]="!isEditing" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" maxlength="30" title="Solo letras">
+        <input type="text" [(ngModel)]="data.especialidad"  aria-label="Especialidad" [disabled]="!isEditing" pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s\']+" maxlength="40" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
       </div>
 
       <!-- CONTACTO -->
       <div class="form-group">
         <label>Contacto</label>
-        <input type="text" [(ngModel)]="data.telefono" aria-label="Teléfono" placeholder="099 999 9999" [disabled]="!isEditing" pattern="[0-9]+" maxlength="13" minlength="10" title="Solo números, mínimo 10, máximo 13">
+        <input type="text" [(ngModel)]="data.telefono" aria-label="Teléfono" placeholder="099 999 9999" [disabled]="!isEditing" pattern="[0-9]+" maxlength="13" minlength="10" title="Solo números, mínimo 10, máximo 13" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" onkeydown="return !['e','E','+','-','.'].includes(event.key)">
       </div>
 
       <!-- EMAIL -->

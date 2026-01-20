@@ -189,17 +189,17 @@
           <div class="form-grid">
             <div class="form-group">
               <label>Nombre</label>
-              <input type="text" [(ngModel)]="formData.displayName" [disabled]="!isEditing" aria-label="Nombre del usuario">
+              <input type="text" [(ngModel)]="formData.displayName" (input)="soloLetras('displayName')"  [disabled]="!isEditing" aria-label="Nombre del usuario" required>
             </div>
             
             <div class="form-group">
               <label>Email</label>
-              <input type="email" [(ngModel)]="formData.email" [disabled]="!isEditing" aria-label="email">
+              <input type="email" [(ngModel)]="formData.email" (input)="soloEmail('email')" [disabled]="!isEditing" aria-label="email">
             </div>
             
             <div class="form-group">
               <label>Especialidad</label>
-              <input type="text" [(ngModel)]="formData.especialidad" [disabled]="!isEditing" aria-label="especialidad">
+              <input type="text" [(ngModel)]="formData.especialidad"  (input)="soloLetras('especialidad')"  [disabled]="!isEditing" aria-label="especialidad">
             </div>
             
             <div class="form-group">
@@ -209,16 +209,16 @@
             
             <div class="form-group">
               <label>Contacto</label>
-              <input type="text" [(ngModel)]="formData.telefono" [disabled]="!isEditing" placeholder="099 999 9999" aria-label="contacto">
+              <input type="text" [(ngModel)]="formData.telefono"  (input)="soloNumeros('telefono')"  maxlength="10" [disabled]="!isEditing" placeholder="099 999 9999" aria-label="contacto">
             </div>
             
             <!-- REDES SOCIALES -->
             <div class="form-group full-row">
               <label class="section-label">Redes Sociales</label>
               <div class="social-inputs">
-                <input type="text" [(ngModel)]="formData.redesSociales.github" [disabled]="!isEditing" placeholder="GitHub URL" aria-label="github">
-                <input type="text" [(ngModel)]="formData.redesSociales.linkedin" [disabled]="!isEditing" placeholder="LinkedIn URL" aria-label="linkedin">
-                <input type="text" [(ngModel)]="formData.redesSociales.portfolio" [disabled]="!isEditing" placeholder="portafolios">
+                <input type="text" [(ngModel)]="formData.redesSociales.github" pattern="https?://.+"  [disabled]="!isEditing" placeholder="GitHub URL" aria-label="github">
+                <input type="text" [(ngModel)]="formData.redesSociales.linkedin" pattern="https?://.+"   [disabled]="!isEditing" placeholder="LinkedIn URL" aria-label="linkedin">
+                <input type="text" [(ngModel)]="formData.redesSociales.portfolio"  [disabled]="!isEditing" placeholder="portafolios">
               </div>
             </div>
             
@@ -250,50 +250,54 @@
       <!-- PARTE 2: AGREGAR PROGRAMADOR (Solo si isCreating es TRUE) -->
       <!-- ======================================================= -->
       @if (isCreating) {
-        <div class="create-section">
-          <h2>Agregar Nuevo Programador</h2>
-          
 
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Nombre </label>
-              <input type="text" [(ngModel)]="formData.name" pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+"maxlength="50" title="Solo letras y espacios" required>
-            </div>
-            <div class="form-group">
-              <label>Email *</label>
-              <input type="email" [(ngModel)]="formData.email" pattern="[a-zA-Z0-9._%+-]+@gmail\.com" title="Debe ser un correo válido @gmail.com" required>
-            </div>
-            <div class="form-group">
-              <label>Especialidad</label>
-              <input type="text" [(ngModel)]="formData.especialidad"  pattern="[A-Za-zÁÉÍÓÚáéíóúñÑ ]+" title="Solo letras" maxlength="30">
-            </div>
-            <div class="form-group">
-              <label>Contacto</label>
-              <input type="text" [(ngModel)]="formData.telefono" placeholder="099 999 9999" pattern="[0-9]+" maxlength="13" title="Solo números, máximo 13 dígitos">
-            </div>
+        <form #progForm="ngForm" (ngSubmit)="saveUser(progForm)">
+          <div class="create-section">
+            <h2>Agregar Nuevo Programador</h2>
+            
 
-            <div class="form-group full-row">
-              <label class="section-label">Redes Sociales</label>
-              <div class="social-inputs">
-                <input type="text" [(ngModel)]="formData.redesSociales.github" placeholder="GitHub URL" pattern="https?://.+" title="Debe ser una URL válida">
-                <input type="text" [(ngModel)]="formData.redesSociales.linkedin" placeholder="LinkedIn URL" pattern="https?://.+" title="Debe ser una URL válida">
-                <input type="text" [(ngModel)]="formData.redesSociales.portfolio" placeholder="Portfolio URL" pattern="https?://.+" title="Debe ser una URL válida">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Nombre </label>
+                <input type="text" [(ngModel)]="formData.name"  pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s\']+" maxlength="40" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
+              </div>
+              <div class="form-group">
+                <label>Email *</label>
+                <input type="email" [(ngModel)]="formData.email" (input)="soloEmail('email')"title="Debe ser un correo válido @gmail.com" required>
+              </div>
+              <div class="form-group">
+                <label>Especialidad</label>
+                <input type="text" [(ngModel)]="formData.especialidad"  pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ\s\']+" maxlength="40" title="Solo letras y espacios" oninput="this.value = this.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, '')">
+              </div>
+              <div class="form-group">
+                <label>Contacto</label>
+                <input type="text" [(ngModel)]="formData.telefono" placeholder="099 999 9999" pattern="[0-9]+" maxlength="13" minlength="10" title="Solo números, mínimo 10, máximo 13" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0,13)" onkeydown="return !['e','E','+','-','.'].includes(event.key)">
+      </div>
+              </div>
+
+              <div class="form-group full-row">
+                <label class="section-label">Redes Sociales</label>
+                <div class="social-inputs">
+                  <input type="text" [(ngModel)]="formData.redesSociales.github" placeholder="GitHub URL" pattern="https?://.+" title="Debe ser una URL válida">
+                  <input type="text" [(ngModel)]="formData.redesSociales.linkedin" placeholder="LinkedIn URL" pattern="https?://.+" title="Debe ser una URL válida">
+                  <input type="text" [(ngModel)]="formData.redesSociales.portfolio" placeholder="Portfolio URL" pattern="https?://.+" title="Debe ser una URL válida">
+                </div>
+              </div>
+
+              <!-- DESCRIPCIÓN AL FINAL -->
+              <div class="form-group full-row">
+                <label>Descripción Profesional</label>
+                <textarea rows="4" [(ngModel)]="formData.descripcion"></textarea>
               </div>
             </div>
 
-            <!-- DESCRIPCIÓN AL FINAL -->
-            <div class="form-group full-row">
-              <label>Descripción Profesional</label>
-              <textarea rows="4" [(ngModel)]="formData.descripcion"></textarea>
+            <div class="action-buttons">
+              <!-- BOTÓN GUARDAR VISIBLE -->
+              <button class="btn btn-success" type="submit" [disabled]="progForm.invalid">✅ Guardar Programador</button>
+              <button class="btn btn-secondary" (click)="cancelAction()">Cancelar</button>
             </div>
-          </div>
-
-          <div class="action-buttons">
-            <!-- BOTÓN GUARDAR VISIBLE -->
-            <button class="btn btn-success" (click)="saveUser()">✅ Guardar Programador</button>
-            <button class="btn btn-secondary" (click)="cancelAction()">Cancelar</button>
-          </div>
-        </div>
+        </form>
       }
   </div>
+  
 </main>

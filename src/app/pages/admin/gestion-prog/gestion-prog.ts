@@ -304,6 +304,18 @@ export class GestionProg implements OnInit {
     this.loading = false;
     this.cdref.detectChanges();
   }
+  soloLetras(field: string) {
+  this.formData[field] = this.formData[field].replace(/[^a-zA-Z áéíóúÁÉÍÓÚñÑ]/g, '');
+}
+
+soloNumeros(field: string) {
+  this.formData[field] = this.formData[field].replace(/[^0-9]/g, '');
+}
+
+soloEmail(field: string) {
+  this.formData[field] = this.formData[field].replace(/[^a-zA-Z0-9@._-]/g, '');
+}
+
 
   async onUsuarioSelected(selectElement: UUID) {
     const uid = selectElement;
@@ -385,7 +397,11 @@ export class GestionProg implements OnInit {
     }
   }
 
-  async saveUser() {
+  async saveUser(form?: any) {
+    if (form && form.invalid) {
+    this.errorMsg = 'Corrige los campos marcados antes de guardar.';
+    return;
+  }
     this.loading = true;
     try {
       if (this.isCreating) {
@@ -423,10 +439,17 @@ export class GestionProg implements OnInit {
     if (!confirm('¿Estás seguro de eliminar a este programador?')) return;
 
     try {
-      await this.programadorService.eliminarProgramador(this.selectedUser.uid);
+      await this.programadorService.eliminarProgramador(this.selectedUser);
       this.selectedUser = null;
       this.selectedUid = '';
       await this.loadProgramadores();
+      await this.loadAdmins();
+      await this.loadUsers();
+
+    this.filteredProgramadores = [...this.programadores];
+    this.filteredAdmins = [...this.admins];
+    this.filteredUsuarios = [...this.usuarios];
+
       alert('Programador eliminado');
     } catch (error) {
       console.error(error);

@@ -1,5 +1,7 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { getFirestore, collection, addDoc, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
+import { Observable, throwError } from 'rxjs';
 
 export interface Horario {
   id?: string;
@@ -15,6 +17,10 @@ export interface Horario {
 export class HorarioService {
   private db = getFirestore();
 
+   private apiUrl = 'http://localhost:8080/gproyectoFinal/api/horario';
+
+   constructor(private http: HttpClient) {}
+/*
   // Obtener todos los Horario de un programador
   async getHorarioByProgramador(programadorId: string): Promise<Horario[]> {
     try {
@@ -69,4 +75,75 @@ export class HorarioService {
       throw error;
     }
   }
+
+  // ================= API BACKEND =================
+
+  getAllHorarioAPI() {
+    return this.http.get<Horario[]>(this.apiUrl);
+  }
+
+  getHorarioByIdAPI(id: string) {
+    return this.http.get<Horario>(`${this.apiUrl}/${id}`);
+  }
+
+  guardarHorarioAPI(horario: Horario) {
+    return this.http.post<Horario>(this.apiUrl, horario);
+  }
+
+  actualizarHorarioAPI(horario: Horario) {
+    return this.http.put<Horario>(
+      `${this.apiUrl}/${horario.id}`,
+      horario
+    );
+  }
+
+  eliminarHorarioAPI(id: string) {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }*/
+
+    
+  // ===============================
+  // PROGRAMADORES
+  // ===============================
+  getProgramadores(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/user`);
+  }
+
+  // ===============================
+  // OBTENER HORARIOS POR PROGRAMADOR
+  // ===============================
+  getHorarioByProgramadorAPI(id: string): Observable<Horario[]> {
+    return this.http.get<Horario[]>(
+      `${this.apiUrl}/horario/programador/${id}`
+    );
+  }
+
+  // ===============================
+  // GUARDAR
+  // ===============================
+  guardarHorarioAPI(h: Horario): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/horario`,
+      h
+    );
+  }
+
+  // ===============================
+  // ELIMINAR
+  // ===============================
+  eliminarHorarioAPI(id: string): Observable<any> {
+    return this.http.delete(
+      `${this.apiUrl}/horario/${id}`
+    );
+  }
+
+  // ===============================
+  // LISTAR TODOS (ADMIN)
+  // ===============================
+  getAllHorario(): Observable<Horario[]> {
+    return this.http.get<Horario[]>(
+      `${this.apiUrl}/horario`
+    );
+  }
+
 }
