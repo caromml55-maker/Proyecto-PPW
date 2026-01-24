@@ -16,10 +16,11 @@
       Inicia sesión para acceder a tu portafolio y conectar con expertos.
     </p>
 
-    <button class="login-btn" (click)="login()">
-  <img class="google-icon" src="https://static.vecteezy.com/system/resources/previews/012/871/371/non_2x/google-search-icon-google-product-illustration-free-png.png">
-  Iniciar sesión con Google
-</button>
+    <button class="login-btn" (click)="login()" [disabled]="isLoading">
+      <img class="google-icon" src="https://static.vecteezy.com/system/resources/previews/012/871/371/non_2x/google-search-icon-google-product-illustration-free-png.png" *ngIf="!isLoading">
+      <span *ngIf="isLoading">Verificando...</span>
+      <span *ngIf="!isLoading">Iniciar sesión con Google</span>
+    </button>
 
 
   </div>
