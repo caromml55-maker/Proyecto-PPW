@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth';
-import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -16,23 +15,18 @@ export class RoleGuard implements CanActivate {
   async canActivate(route: ActivatedRouteSnapshot) {
     const expectedRoles = route.data['role'];
 
-    const asyncUser = await this.auth.getCurrentUser();
-    if (!asyncUser) {
+    // El AuthService nuevo ya valida el usuario con el backend y tiene el rol
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) {
       this.router.navigate(['/login']);
       return false;
     }
 
-    const db = getFirestore();
-    const ref = doc(db, `users/${asyncUser.uid}`);
-    const snap = await getDoc(ref);
+    // Verificar rol del usuario (obtenido del backend Jakarta)
+    const userRole = currentUser.role?.toLowerCase();
+    const expectedRoleArray = Array.isArray(expectedRoles) ? expectedRoles : [expectedRoles];
 
-    if (!snap.exists()) {
-      this.router.navigate(['/unauthorized']);
-      return false;
-    }
-
-    const data = snap.data() as any;
-    if (expectedRoles.includes(data.rol || data.role)) {
+    if (expectedRoleArray.some(role => userRole === role?.toLowerCase())) {
       return true;
     }
 
