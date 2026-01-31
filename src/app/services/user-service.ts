@@ -9,7 +9,7 @@ import { User } from '../models/models';
 })
 export class UserService {
   
-  private URL = 'http://localhost:8080/gproyectoFinal/api/user';
+  private URL = 'http://localhost:8080/gproyectoFinal/api/users';
 
   constructor(private http: HttpClient) {
     console.log(`[UserService] Inicializado con URL: ${this.URL}`);

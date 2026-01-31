@@ -12,11 +12,13 @@ import { Notificaciones } from './pages/Programador/notificaciones/notificacione
 import { Lab } from './pages/Programador/lab/lab';
 import { Academic } from './pages/Programador/perfil/academic';
 import { Asesoria } from './pages/Programador/asesoria/asesoria';
+import { Unauthorized } from './pages/unauthorized/unauthorized';
 
 export const routes: Routes = [
     {path: '', redirectTo: 'login', pathMatch: 'full'},
     {path: 'login', component: Login},
     {path: 'home', component: Home},
+    {path: 'unauthorized', component: Unauthorized},
     {path: 'admin', component: Admin,canActivate: [RoleGuard],data: { role: ['admin'] } },
     {path: 'programador',component: Program,canActivate: [RoleGuard],data: { role: ['programador'] }},
     {path: 'usuario',component: Usuario,canActivate: [RoleGuard], data: { role: ['user'] }},

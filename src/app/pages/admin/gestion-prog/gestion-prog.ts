@@ -4,8 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { ProgramadorService } from '../../../services/programador.service';
 import { FormsModule } from '@angular/forms';
 import { ChangeDetectorRef } from '@angular/core';
-import { collection, getDocs, getFirestore, query, where } from 'firebase/firestore';
-import { UUID } from 'crypto';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-gestion-prog',
@@ -236,7 +235,8 @@ export class GestionProg implements OnInit {
 
   async loadProgramadores() {
     try {
-      this.programadores = await this.programadorService.getProgramadores();
+      const programadores = await firstValueFrom(this.programadorService.getProgramadores());
+      this.programadores = programadores;
       this.errorMsg = null;
     } catch (e) {
       console.error(e);
@@ -245,7 +245,7 @@ export class GestionProg implements OnInit {
     }
   }
 
-  async onProgramadorSelected(selectElement: UUID) {
+  async onProgramadorSelected(selectElement: string) {
     const uid = selectElement;
     if (!uid) return;
     
@@ -256,26 +256,30 @@ export class GestionProg implements OnInit {
     this.isCreating = false;
     this.isEditing = false;
 
-    const prog = await this.programadorService.getProgramador(uid);
+    try {
+      const prog = await firstValueFrom(this.programadorService.getProgramador(uid));
 
-    if (prog) {
-      this.selectedUid = uid;
-      this.formData = JSON.parse(JSON.stringify(prog));
+      if (prog) {
+        this.selectedUid = uid;
+        this.formData = JSON.parse(JSON.stringify(prog));
 
-      if (!this.formData.redesSociales) {
-        this.formData.redesSociales = {
-          github: '',
-          linkedin: '',
-          portfolio: ''
-        };
+        if (!this.formData.redesSociales) {
+          this.formData.redesSociales = {
+            github: '',
+            linkedin: '',
+            portfolio: ''
+          };
+        }
       }
+    } catch (error) {
+      console.error('Error obteniendo programador:', error);
     }
 
     this.loading = false;
     this.cdref.detectChanges();
   }
 
-  async onAdminSelected(selectElement: UUID) {
+  async onAdminSelected(selectElement: string) {
     const uid = selectElement;
     if (!uid) return;
     
@@ -286,19 +290,23 @@ export class GestionProg implements OnInit {
     this.isCreating = false;
     this.isEditing = false;
 
-    const prog = await this.programadorService.getProgramador(uid);
+    try {
+      const prog = await firstValueFrom(this.programadorService.getProgramador(uid));
 
-    if (prog) {
-      this.selectedUid = uid;
-      this.formData = JSON.parse(JSON.stringify(prog));
+      if (prog) {
+        this.selectedUid = uid;
+        this.formData = JSON.parse(JSON.stringify(prog));
 
-      if (!this.formData.redesSociales) {
-        this.formData.redesSociales = {
-          github: '',
-          linkedin: '',
-          portfolio: ''
-        };
+        if (!this.formData.redesSociales) {
+          this.formData.redesSociales = {
+            github: '',
+            linkedin: '',
+            portfolio: ''
+          };
+        }
       }
+    } catch (error) {
+      console.error('Error obteniendo admin:', error);
     }
 
     this.loading = false;
@@ -317,10 +325,10 @@ soloEmail(field: string) {
 }
 
 
-  async onUsuarioSelected(selectElement: UUID) {
+  async onUsuarioSelected(selectElement: string) {
     const uid = selectElement;
     if (!uid) return;
-    
+
     this.selectedUser = this.selectedUsuario;
     this.selectedAdmin = null;
     this.selectedProgramador = null;
@@ -328,19 +336,23 @@ soloEmail(field: string) {
     this.isCreating = false;
     this.isEditing = false;
 
-    const prog = await this.programadorService.getProgramador(uid);
+    try {
+      const prog = await firstValueFrom(this.programadorService.getProgramador(uid));
 
-    if (prog) {
-      this.selectedUid = uid;
-      this.formData = JSON.parse(JSON.stringify(prog));
+      if (prog) {
+        this.selectedUid = uid;
+        this.formData = JSON.parse(JSON.stringify(prog));
 
-      if (!this.formData.redesSociales) {
-        this.formData.redesSociales = {
-          github: '',
-          linkedin: '',
-          portfolio: ''
-        };
+        if (!this.formData.redesSociales) {
+          this.formData.redesSociales = {
+            github: '',
+            linkedin: '',
+            portfolio: ''
+          };
+        }
       }
+    } catch (error) {
+      console.error('Error obteniendo usuario:', error);
     }
 
     this.loading = false;
@@ -378,18 +390,22 @@ soloEmail(field: string) {
     this.isEditing = false;
 
     if (this.selectedUser) {
-      const prog = await this.programadorService.getProgramador(this.selectedUser);
+      try {
+        const prog = await firstValueFrom(this.programadorService.getProgramador(this.selectedUser));
 
-      if (prog) {
-        this.formData = JSON.parse(JSON.stringify(prog));
+        if (prog) {
+          this.formData = JSON.parse(JSON.stringify(prog));
 
-        if (!this.formData.redesSociales) {
-          this.formData.redesSociales = {
-            github: '',
-            linkedin: '',
-            portfolio: ''
-          };
+          if (!this.formData.redesSociales) {
+            this.formData.redesSociales = {
+              github: '',
+              linkedin: '',
+              portfolio: ''
+            };
+          }
         }
+      } catch (error) {
+        console.error('Error obteniendo datos para cancelar:', error);
       }
       this.cdref.detectChanges();
     } else {
@@ -410,15 +426,16 @@ soloEmail(field: string) {
           this.formData.photoURL =
             `https://ui-avatars.com/api/?name=${this.formData.displayName}&background=random`;
         }
-        await this.programadorService.crearProgramador(this.formData);
+        this.formData.role = 'programador'; // Asegurar que sea programador
+        await firstValueFrom(this.programadorService.crearUsuario(this.formData));
         alert('Programador creado correctamente');
       } else {
         // EDITAR
         console.log(this.selectedUser)
-        await this.programadorService.actualizarProgramador(
+        await firstValueFrom(this.programadorService.actualizarProgramador(
           this.selectedUser,
           this.formData
-        );
+        ));
         alert('Datos actualizados correctamente');
       }
 
@@ -439,16 +456,16 @@ soloEmail(field: string) {
     if (!confirm('¿Estás seguro de eliminar a este programador?')) return;
 
     try {
-      await this.programadorService.eliminarProgramador(this.selectedUser);
+      await firstValueFrom(this.programadorService.eliminarUsuario(this.selectedUser));
       this.selectedUser = null;
       this.selectedUid = '';
       await this.loadProgramadores();
       await this.loadAdmins();
       await this.loadUsers();
 
-    this.filteredProgramadores = [...this.programadores];
-    this.filteredAdmins = [...this.admins];
-    this.filteredUsuarios = [...this.usuarios];
+      this.filteredProgramadores = [...this.programadores];
+      this.filteredAdmins = [...this.admins];
+      this.filteredUsuarios = [...this.usuarios];
 
       alert('Programador eliminado');
     } catch (error) {
@@ -466,34 +483,27 @@ soloEmail(field: string) {
   }
 
   async loadAdmins() {
-    const db = getFirestore();
-    const ref = collection(db, 'users');
-    const q = query(ref, where('role', '==', 'admin'));
-    const snap = await getDocs(q);
-
-    this.admins = snap.docs.map(d => {
-      const data: any = d.data();
-      return {
-        uid: data.uid || d.id,
-        ...data
-      };
-    });
+    try {
+      this.admins = await firstValueFrom(this.programadorService.getAdmins());
+      this.errorMsg = null;
+    } catch (e) {
+      console.error(e);
+      this.errorMsg = 'No se pudieron cargar los administradores.';
+      this.admins = [];
+    }
   }
 
 
   async loadUsers() {
-    const db = getFirestore();
-    const ref = collection(db, 'users');
-    const q = query(ref, where('role', '==', 'user'));
-    const snap = await getDocs(q);
-
-    this.usuarios = snap.docs.map(d => {
-      const data: any = d.data();
-      return {
-        uid: data.uid || d.id,
-        ...data
-      };
-    });
+    try {
+      const allUsers = await firstValueFrom(this.programadorService.getAllUsers());
+      this.usuarios = allUsers.filter(user => user.role === 'user');
+      this.errorMsg = null;
+    } catch (e) {
+      console.error(e);
+      this.errorMsg = 'No se pudieron cargar los usuarios.';
+      this.usuarios = [];
+    }
   }
   
 }

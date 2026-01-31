@@ -2,12 +2,55 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.9.
 
+## Project Structure
+
+This project consists of two separate projects:
+
+### Frontend (Angular)
+- **Location**: Current directory
+- **Technology**: Angular 17+ with standalone components
+- **Authentication**: Firebase Auth
+- **Build**: `npm run build`
+- **Development server**: `npm start` (runs on http://localhost:4200)
+
+### Backend (Jakarta EE)
+- **Location**: Separate external project/directory
+- **Technology**: Jakarta EE with JAX-RS, CDI, JPA
+- **Database**: PostgreSQL
+- **Server**: WildFly
+- **API Base URL**: `http://localhost:8080/gproyectoFinal/api`
+- **Status**: ✅ Running and connected via HttpClient
+
+## Backend API Endpoints
+
+The backend provides the following REST endpoints:
+
+- `/user` - User management (CRUD operations)
+- `/user/programadores` - Programmer-specific operations
+- `/portafolio` - Portfolio/project management
+- `/notification` - Notification system
+- `/horario` - Schedule management
+- `/asesoria` - Advisory services
+- `/auth/validate` - Firebase token validation
+
+## Backend Services
+
+The backend provides the following REST endpoints:
+
+- `/user` - User management (CRUD operations)
+- `/user/programadores` - Programmer-specific operations
+- `/portafolio` - Portfolio/project management
+- `/notification` - Notification system
+- `/horario` - Schedule management
+- `/asesoria` - Advisory services
+- `/auth/validate` - Firebase token validation
+
 ## Development server
 
 To start a local development server, run:
 
 ```bash
-ng serve
+npm start
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.

@@ -99,13 +99,19 @@ export class AuthService {
 
   private async validateTokenWithBackend(idToken: string): Promise<AuthUser> {
     try {
+      console.log('[AuthService] 🔄 Enviando token al backend...');
+      console.log('[AuthService] URL:', `${this.API_URL}/auth/validate-token`);
+      console.log('[AuthService] Token length:', idToken.length);
+
       const response = await firstValueFrom(
         this.http.post<FirebaseValidationResponse>(`${this.API_URL}/auth/validate-token`, { token: idToken })
           .pipe(timeout(10000))
       );
 
+      console.log('[AuthService] ✅ Respuesta del backend:', response);
+
       // El backend devuelve { uid, email, name, photoURL, role }
-      return {
+      const authUser = {
         uid: response.uid,
         email: response.email,
         displayName: response.name,
@@ -114,8 +120,14 @@ export class AuthService {
         createdAt: new Date().toISOString()
       };
 
+      console.log('[AuthService] ✅ Usuario mapeado:', authUser);
+      return authUser;
+
     } catch (error: any) {
       console.error('[AuthService] ❌ Error validando token con backend:', error);
+      console.error('[AuthService] Error status:', error?.status);
+      console.error('[AuthService] Error message:', error?.message);
+      console.error('[AuthService] Error details:', error);
       throw new Error('Token inválido o backend no disponible');
     }
   }

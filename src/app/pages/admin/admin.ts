@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { getFirestore, collection, onSnapshot, deleteDoc, doc as firestoreDoc } from 'firebase/firestore';
-import { AppUser } from '../../models/app-user.model';
+import { ProgramadorService } from '../../services/programador.service';
 import { RouterLink, RouterLinkActive, RouterModule, RouterOutlet } from "@angular/router";
 import { FormsModule } from '@angular/forms';
 import { Router} from '@angular/router';
@@ -16,36 +15,44 @@ import { getAuth, signOut} from "firebase/auth";
 })
 export class Admin implements OnInit {
 
-  section: string = 'programadores'; 
-  programadores: Array<AppUser & { id: string }> = [];
+  section: string = 'programadores';
+  programadores: any[] = [];
   userName = "";
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private programadorService: ProgramadorService) {}
 
   ngOnInit(): void {
     this.cargarProgramadores();
   }
 
   cargarProgramadores() {
-    const db = getFirestore();
-    const ref = collection(db, 'users');
     const auth = getAuth();
     this.userName = auth.currentUser?.displayName || "";
 
-    onSnapshot(ref, (snapshot) => {
-      this.programadores = snapshot.docs
-        .map(d => ({ id: d.id, ...(d.data() as AppUser) }))
-        .filter((user) => user.role === 'programmer');
+    this.programadorService.getProgramadores().subscribe({
+      next: (programadores) => {
+        this.programadores = programadores;
+      },
+      error: (error) => {
+        console.error('Error cargando programadores:', error);
+      }
     });
   }
 
-  async eliminarProgramador(id: string) {
+  eliminarProgramador(uid: string) {
     const confirmar = confirm("¿Estás seguro de eliminar este programador?");
     if (!confirmar) return;
 
-    const db = getFirestore();
-    await deleteDoc(firestoreDoc(db, 'users', id));
-    alert("Programador eliminado.");
+    this.programadorService.eliminarUsuario(uid).subscribe({
+      next: () => {
+        alert("Programador eliminado.");
+        this.cargarProgramadores(); // Recargar la lista
+      },
+      error: (error) => {
+        console.error('Error eliminando programador:', error);
+        alert("Error eliminando programador.");
+      }
+    });
   }
 
   editarProgramador(p: any) {
