@@ -38,23 +38,15 @@ export class AuthService {
   }
 
   private checkAuthState() {
-    const auth = getAuth();
-    onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        try {
-          // Obtener token y validar con backend
-          const idToken = await firebaseUser.getIdToken();
-          const validatedUser = await this.validateTokenWithBackend(idToken);
-          this.currentUserSubject.next(validatedUser);
-        } catch (error) {
-          console.error('Error validating token:', error);
-          this.currentUserSubject.next(null);
-        }
-      } else {
-        this.currentUserSubject.next(null);
-      }
-    });
-  }
+  const auth = getAuth();
+  onAuthStateChanged(auth, async (firebaseUser) => {
+    if (firebaseUser) {
+      console.log('[AuthService] Usuario Firebase ya autenticado');
+    } else {
+      this.currentUserSubject.next(null);
+    }
+  });
+}
 
   async loginWithGoogle(): Promise<AuthUser> {
     const auth = getAuth();

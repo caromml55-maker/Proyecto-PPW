@@ -58,17 +58,18 @@ import { RouterModule } from "@angular/router";
       this.cargarProgramadores();
     }
 /*
-    async cargarProgramadores() {
-      const db = getFirestore();
-      const ref = collection(db, "users");
-      const snap = await getDocs(ref);
-
-      this.programadores = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter((u: any) => u.role === "programador");
-
-      this.cdRef.detectChanges();
-    }
+    async loadProgramadores() {
+        try {
+          const programadores = await firstValueFrom(this.programadorService.getProgramadores());
+          this.programadores = programadores;
+          this.errorMsg = null;
+        } catch (e) {
+          console.error(e);
+          this.errorMsg = 'No se pudieron cargar los programadores.';
+          this.programadores = [];
+        }
+      }
+    
 
     // Cuando se selecciona un programador
     async onProgramadorSelected() {

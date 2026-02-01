@@ -8,43 +8,35 @@ export class ProgramadorService {
 
   constructor(private http: HttpClient) {}
 
+  // PROGRAMADORES
   getProgramadores(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/programadores`);
-  }
-
-  getAdmins(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/admins`);
-  }
-
-  getAllUsers(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/users`);
-  }
-
-  getUserByUid(uid: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/users/${uid}`);
-  }
-
-  crearUsuario(data: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/users`, data);
-  }
-
-  actualizarUsuario(uid: string, data: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/users/${uid}`, data);
-  }
-
-  eliminarUsuario(uid: string): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/users/${uid}`);
+    return this.http.get<any[]>(`${this.apiUrl}/users/programadores`);
   }
 
   getProgramador(uid: string): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/programadores/${uid}`);
+    return this.http.get<any>(`${this.apiUrl}/users/${uid}`);
   }
 
-  actualizarProgramador(uid: string, data: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/users/${uid}`, data);
+  // ADMINS
+  getAdmins(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/admins`);
   }
 
-  cambiarRolUsuario(uid: string, role: string): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/users/${uid}/role`, { role });
+  // USUARIOS
+  getAllUsers(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/users/usuarios`);
+  }
+
+  // CRUD
+  crearUsuario(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/users`, data);
+  }
+
+  actualizarUsuario(uid: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/users/${uid}`, data);
+  }
+
+  eliminarUsuario(uid: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/users/${uid}`);
   }
 }

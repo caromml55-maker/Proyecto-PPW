@@ -12,6 +12,8 @@ import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
 import { ChangeDetectorRef } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
 
 @Component({
   selector: 'app-usuario',
@@ -21,6 +23,10 @@ import { ChangeDetectorRef } from '@angular/core';
   styleUrls: ['./usuario.scss']
 })
 export class Usuario implements OnInit {
+
+  private API_URL = 'http://localhost:8081/api';
+
+
   programadores: any[] = [];
   seleccionado: any = null;
   notificaciones: any[] = [];
@@ -52,13 +58,16 @@ export class Usuario implements OnInit {
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
     eventClick: (info) => this.onEventClick(info),
-    // Configuración para permitir selección de eventos
     eventDisplay: 'block',
     eventColor: '#3788d8' // Color por defecto
   };
 
+  constructor(
+  private router: Router,
+  private cdRef: ChangeDetectorRef,
+  private http: HttpClient
+) {}
 
-  constructor(private router: Router, private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit() {
     this.loading = true;
@@ -76,38 +85,22 @@ export class Usuario implements OnInit {
   }
 
   async cargarProgramadores() {
-    const db = getFirestore();
-    const ref = collection(db, "users");
-    const snap = await getDocs(ref);
-
-    this.programadores = snap.docs.map(d => {
-      const data = d.data();
-
-      return {
-        idDoc: d.id,
-        uid: data['uid'],
-        name: data['displayName'] || data['name'] || "",
-        especialidad: data['especialidad'] || "",
-        photoURL: data['photoURL'] || "",
-        role:  data['role']
-      };
-    }).filter((u:any) => u.role === "programador");
+    try {
+      this.programadores = (await this.http.get<any[]>(`${this.API_URL}/users/programadores`).toPromise()) || [];
+    } catch (error) {
+      console.error("Error cargando programadores", error);
+      this.programadores = [];
+    }
   }
 
   async cargarNotificaciones(){
-    const auth = getAuth();
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const db = getFirestore();
-    const ref = collection(db, "notifications");
-    const q = query(ref, where("usuarioId", "==", user.uid), orderBy("fechaHora", "desc"));
-    const snap = await getDocs(q);
-
-    this.notificaciones = snap.docs.map(d => ({
-      id: d.id,
-      ...d.data()
-    }));
+    try {
+      const resp: any = await this.http.get(`${this.API_URL}/notifications`).toPromise();
+      this.notificaciones = resp || [];
+    } catch (error) {
+      console.error("Error cargando notificaciones", error);
+      this.notificaciones = [];
+    }
     this.cdRef.detectChanges();
   }
 
@@ -170,13 +163,7 @@ export class Usuario implements OnInit {
   // Marcar como leída en Firebase
   async marcarComoLeida(id: string) {
     try {
-      const db = getFirestore();
-      const ref = doc(db, "notifications", id);
-      
-      await updateDoc(ref, {
-        leido: true
-      });
-
+      await this.http.put(`${this.API_URL}/notifications/${id}/leido`, {}).toPromise();
       this.cargarNotificaciones();
     } catch (error) {
       console.error('Error al marcar como leída:', error);
@@ -206,21 +193,25 @@ export class Usuario implements OnInit {
     this.seleccionado = p;
     this.viendoPortafolios = true;
 
-    const db = getFirestore();
-    const ref = collection(db, "portafolios");
-    const q = query(ref, where("uidProgramador","==",p.uid))
-    const snap = await getDocs(q);
+    try {
+    // Petición HTTP al backend para proyectos académicos
+    const academicos: any = await this.http
+      .get(`${this.API_URL}/portafolios/${p.uid}/academico`)
+      .toPromise();
 
-    if (snap.empty) {
-      this.portafoliosAcademicos = [];
-      this.portafoliosLaborales = [];
-    } else {
-      snap.forEach(doc => {
-        const data: any = doc.data();
-        this.portafoliosAcademicos = data.proyectosAcademicos || [];
-        this.portafoliosLaborales = data.proyectosLaborales || [];
-      });
-    }
+    // Petición HTTP al backend para proyectos laborales
+    const laborales: any = await this.http
+      .get(`${this.API_URL}/portafolios/${p.uid}/laboral`)
+      .toPromise();
+
+    this.portafoliosAcademicos = academicos || [];
+    this.portafoliosLaborales = laborales || [];
+
+  } catch (error) {
+    console.error("Error cargando portafolios", error);
+    this.portafoliosAcademicos = [];
+    this.portafoliosLaborales = [];
+  }
     this.loadingPortafolios = false;
     this.cdRef.detectChanges();
   }
@@ -228,28 +219,23 @@ export class Usuario implements OnInit {
 
   async cargarHorarios(uid:string) {
 
-    const db = getFirestore();
-    const ref = collection(db, "horarios");
-    const q = query(ref, where("programadorId", "==", uid));
-    const snap = await getDocs(q);
-
-    this.eventosCalendar = snap.docs.map(d => {
-      const h: any = d.data();
-      return {
-        id: d.id,
-        title: "Disponible",
+    try {
+      const snap: any = await this.http.get(`${this.API_URL}/horarios/${uid}`).toPromise();
+      this.eventosCalendar = snap.map((h: any) => ({
+        id: h.id,
+        title: 'Disponible',
         start: `${h.fecha}T${h.inicio}`,
-        end:   `${h.fecha}T${h.fin}`,
+        end: `${h.fecha}T${h.fin}`,
         backgroundColor: '#28a745',
         borderColor: '#28a745'
-      };
-    });
+      }));
 
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      events: [...this.eventosCalendar]
-    };
-
+      this.actualizarCalendario();
+      this.calendarReady = true;
+    } catch (error) {
+      console.error("Error cargando horarios", error);
+      this.eventosCalendar = [];
+    }
     this.calendarReady = true;
     this.cdRef.detectChanges();
   }
@@ -260,43 +246,32 @@ export class Usuario implements OnInit {
     if (!this.horaSeleccionada || !this.selectedEventId) {
       alert("Primero selecciona un horario del calendario.");
       return;
-    } 
+    }
 
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const db = getFirestore();
-
-    await addDoc(collection(db, "asesorias"), {
-      programadorId: this.seleccionado.uid,
-      usuarioId: user?.uid,
+    const body = {
+      programadorUid: this.seleccionado.uid,
+      usuarioUid: "user-demo", // reemplazar con JWT o backend
       fechaHora: this.horaSeleccionada,
-      comentario: this.comentario,
-      estado: "pendiente"
-    });
+      comentario: this.comentario
+    };
 
-    await addDoc(collection(db, "notifications"), {
-      usuarioId: user?.uid,
-      mensaje: `📩 Nueva solicitud de asesoría de ${this.userName}`,
-      fechaHora: new Date().toISOString(),
-      leido: false
-    });
+    try {
+      await this.http.post(`${this.API_URL}/asesorias`, body).toPromise();
+      await this.http.post(`${this.API_URL}/notifications`, {
+        usuarioId: "user-demo",
+        mensaje: `📩 Nueva solicitud de asesoría de ${this.userName}`
+      }).toPromise();
 
-    this.eventosCalendar = this.eventosCalendar.map(e => {
-      if (e.id === this.selectedEventId) {
-        return {
-          ...e,
-          title: "Solicitado",
-          backgroundColor: '#fadb7dff', // amarillo
-          borderColor: '#ffc107'
-        };
-      }
-      return e;
-    });
+      this.eventosCalendar = this.eventosCalendar.map(e => e.id === this.selectedEventId
+        ? { ...e, title: 'Solicitado', backgroundColor: '#fadb7dff', borderColor: '#ffc107' }
+        : e
+      );
 
-
-    this.actualizarCalendario();
-
-    alert("La solicitud fue enviada al programador 👍");
+      this.actualizarCalendario();
+      alert("La solicitud fue enviada al programador 👍");
+    } catch (error) {
+      console.error("Error agendando asesoría", error);
+    }
 
     // Limpiar selección pero quedarnos en la misma vista
     if (this.eventoSeleccionado) {

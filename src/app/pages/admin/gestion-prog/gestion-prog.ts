@@ -48,6 +48,7 @@ export class GestionProg implements OnInit {
       email: '',
       especialidad: '',
       descripcion: '',
+      telefono: '',
       photoURL: '',
       redesSociales: {
         github: '',
@@ -61,6 +62,17 @@ export class GestionProg implements OnInit {
     private router: Router,
     private cdref: ChangeDetectorRef
   ) {}
+
+  
+
+  // Función para generar un UID temporal único
+  private generateUUID(): string {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0;
+      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  }
 
   async ngOnInit() {
     this.loading = true;
@@ -87,6 +99,7 @@ export class GestionProg implements OnInit {
     }
   }
 
+  
   // Texto a mostrar en el combobox
   getDisplayTextProg(): string {
     if (!this.selectedProgramador) return '';
@@ -263,13 +276,12 @@ export class GestionProg implements OnInit {
         this.selectedUid = uid;
         this.formData = JSON.parse(JSON.stringify(prog));
 
-        if (!this.formData.redesSociales) {
-          this.formData.redesSociales = {
-            github: '',
-            linkedin: '',
-            portfolio: ''
-          };
-        }
+        // Mapear campos del backend al formato del formulario
+        this.formData.redesSociales = {
+          github: prog.github || '',
+          linkedin: prog.linkedin || '',
+          portfolio: '' // No existe en backend
+        };
       }
     } catch (error) {
       console.error('Error obteniendo programador:', error);
@@ -297,13 +309,12 @@ export class GestionProg implements OnInit {
         this.selectedUid = uid;
         this.formData = JSON.parse(JSON.stringify(prog));
 
-        if (!this.formData.redesSociales) {
-          this.formData.redesSociales = {
-            github: '',
-            linkedin: '',
-            portfolio: ''
-          };
-        }
+        // Mapear campos del backend al formato del formulario
+        this.formData.redesSociales = {
+          github: prog.github || '',
+          linkedin: prog.linkedin || '',
+          portfolio: '' // No existe en backend
+        };
       }
     } catch (error) {
       console.error('Error obteniendo admin:', error);
@@ -343,13 +354,12 @@ soloEmail(field: string) {
         this.selectedUid = uid;
         this.formData = JSON.parse(JSON.stringify(prog));
 
-        if (!this.formData.redesSociales) {
-          this.formData.redesSociales = {
-            github: '',
-            linkedin: '',
-            portfolio: ''
-          };
-        }
+        // Mapear campos del backend al formato del formulario
+        this.formData.redesSociales = {
+          github: prog.github || '',
+          linkedin: prog.linkedin || '',
+          portfolio: '' // No existe en backend
+        };
       }
     } catch (error) {
       console.error('Error obteniendo usuario:', error);
@@ -367,6 +377,7 @@ soloEmail(field: string) {
 
     // Limpiamos el formulario
     this.formData = {
+      uid: this.generateUUID(), // Generar UID temporal único
       displayName: '',
       email: '',
       especialidad: '',
@@ -396,13 +407,12 @@ soloEmail(field: string) {
         if (prog) {
           this.formData = JSON.parse(JSON.stringify(prog));
 
-          if (!this.formData.redesSociales) {
-            this.formData.redesSociales = {
-              github: '',
-              linkedin: '',
-              portfolio: ''
-            };
-          }
+          // Mapear campos del backend al formato del formulario
+          this.formData.redesSociales = {
+            github: prog.github || '',
+            linkedin: prog.linkedin || '',
+            portfolio: '' // No existe en backend
+          };
         }
       } catch (error) {
         console.error('Error obteniendo datos para cancelar:', error);
@@ -416,25 +426,54 @@ soloEmail(field: string) {
   async saveUser(form?: any) {
     if (form && form.invalid) {
     this.errorMsg = 'Corrige los campos marcados antes de guardar.';
+    
+    
+    // -----
+    // Este console.log te mostrará qué campo falla
+    Object.keys(form.controls).forEach(key => {
+      const controlErrors = form.controls[key].errors;
+      if (controlErrors != null) {
+        console.log('❌ Error en campo:', key, '->', controlErrors);
+      }
+    });
+
+    console.log('Estado actual de los datos que intentabas enviar:', this.formData);
+
+    // -----------------
     return;
   }
     this.loading = true;
     try {
+      // Mapear datos del formulario al formato esperado por el backend
+      const dataToSend = {
+        ...this.formData,
+        github: this.formData.redesSociales.github,
+        linkedin: this.formData.redesSociales.linkedin
+        // portfolio no se envía ya que no existe en el backend
+      };
+      delete dataToSend.redesSociales;
+      console.log('FORMDATA:', this.formData);
+      console.log('DATA TO SEND:', dataToSend);
+
       if (this.isCreating) {
         // CREAR
-        if (!this.formData.photoURL) {
-          this.formData.photoURL =
-            `https://ui-avatars.com/api/?name=${this.formData.displayName}&background=random`;
+        if (!dataToSend.photoURL) {
+          dataToSend.photoURL =
+            `https://ui-avatars.com/api/?name=${dataToSend.displayName}&background=random`;
         }
-        this.formData.role = 'programador'; // Asegurar que sea programador
-        await firstValueFrom(this.programadorService.crearUsuario(this.formData));
+        dataToSend.role = 'programador'; // Asegurar que sea programador
+        await firstValueFrom(this.programadorService.crearUsuario(dataToSend));
+        console.log('OBJETO FINAL ENVIADO:', dataToSend);
+        console.log('JSON ENVIADO:', JSON.stringify(dataToSend, null, 2));
         alert('Programador creado correctamente');
       } else {
         // EDITAR
         console.log(this.selectedUser)
-        await firstValueFrom(this.programadorService.actualizarProgramador(
-          this.selectedUser,
-          this.formData
+        console.log('OBJETO FINAL ENVIADO:', dataToSend);
+        console.log('JSON ENVIADO:', JSON.stringify(dataToSend, null, 2));
+        await firstValueFrom(this.programadorService.actualizarUsuario(
+          this.selectedUid!,
+          dataToSend
         ));
         alert('Datos actualizados correctamente');
       }
