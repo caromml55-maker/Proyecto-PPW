@@ -7,8 +7,9 @@
   import { CalendarOptions } from '@fullcalendar/core';
   import dayGridPlugin from '@fullcalendar/daygrid';
   import interactionPlugin from '@fullcalendar/interaction';
-  import { HorarioService, Horario } from '../../../services/horarios.service';
-import { RouterModule } from "@angular/router";
+  import { HorarioService, Horario } from '../../../services/horario.service';
+  import { RouterModule } from "@angular/router";
+  import { getAuth } from 'firebase/auth';
 
 
   @Component({
@@ -21,19 +22,19 @@ import { RouterModule } from "@angular/router";
 
   export class Horarios  implements OnInit{
 
-    programadores: any[] = [];     
-    selectedProgId: string = "";   
+    uidProgramador: string = "";     
 
     fecha: string = "";            
     horaInicio: string = "";     
     horaFin: string = "";
+    modalidad: string = "";
 
     horarios: Horario[] = [];
     calendarEvents: any[] = [];
 
     isFormValid: boolean = false;
     mensajeError: string = '';
-    
+    loading: boolean = false;
     
     calendarOptions: CalendarOptions = {
       plugins: [dayGridPlugin, interactionPlugin],
@@ -55,262 +56,78 @@ import { RouterModule } from "@angular/router";
     constructor(private horarioService: HorarioService, private cdRef: ChangeDetectorRef) {}
 
     ngOnInit(): void {
-      this.cargarProgramadores();
+      const auth = getAuth();
+    if (auth.currentUser) {
+      this.uidProgramador = auth.currentUser.uid;
+      this.cargarHorarios();
+    } else {
+      console.error("No hay usuario logueado");
     }
-/*
-    async loadProgramadores() {
-        try {
-          const programadores = await firstValueFrom(this.programadorService.getProgramadores());
-          this.programadores = programadores;
-          this.errorMsg = null;
-        } catch (e) {
-          console.error(e);
-          this.errorMsg = 'No se pudieron cargar los programadores.';
-          this.programadores = [];
-        }
-      }
-    
-
-    // Cuando se selecciona un programador
-    async onProgramadorSelected() {
-      if (!this.selectedProgId) {
-        this.horarios = [];
-        this.calendarEvents = [];
-        this.actualizarCalendario();
-        return;
-      }
-
-      await this.cargarHorariosProgramador(this.selectedProgId);
     }
 
-    // Actualizar el calendario
-    actualizarCalendario() {
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: [...this.calendarEvents]
-      };
-      this.cdRef.detectChanges();
-    }
-
-    // Cargar horarios del programador seleccionado
-    /*
-    async cargarHorariosProgramador(programadorId: string) {
-      try {
-       // this.horarios = await this.horarioService.getHorarioByProgramador(programadorId);
-       this.horarioService.getAllHorarioAPI().subscribe(data=>{ this.horarios = data.filter(h=>h.programadorId === programadorId);
-      this.actualizarEventosCalendario();
-});
-
+    cargarHorarios() {
+    this.loading = true;
+    this.horarioService.getHorarioByProgramadorAPI(this.uidProgramador).subscribe({
+      next: (data) => {
+        this.horarios = data;
         this.actualizarEventosCalendario();
-      } catch (error) {
-        console.error('Error cargando horarios:', error);
-        alert('Error al cargar los horarios del programador');
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.loading = false;
+        alert("Error cargando tus horarios");
       }
-    }
-
-    async cargarHorariosProgramador(programadorId: string) {
-      this.horarioService.getAllHorarioAPI()
-      .subscribe({
-        next: (data)=>{
-          this.horarios = data.filter(h=>h.programadorId === programadorId);
-          this.actualizarEventosCalendario();
-        },
-        error: (err)=>{
-          console.error(err);
-          alert("Error cargando horarios desde API");
-        }
-      });
-    }
-
-
-    // Actualizar eventos del calendario
-    actualizarEventosCalendario() {
-      this.calendarEvents = this.horarios.map(horario => ({
-        id: horario.id,
-        title: `Disponible (${horario.inicio} - ${horario.fin})`,
-        date: horario.fecha,
-        backgroundColor: '#28a745',
-        borderColor: '#28a745',
-        extendedProps: {
-          title: "Reunion",
-          inicio: horario.inicio,
-          fin: horario.fin,
-          programadorId: horario.programadorId
-        }
-      }));
-      
-      this.actualizarCalendario();
-    }
-
-    // Manejar clic en evento del calendario
-    handleEventClick(info: any) {
-      const event = info.event;
-      const horarioId = event.id;
-      
-      if (confirm(`¿Eliminar horario del ${event.startStr}?`)) {
-        this.eliminarHorario(horarioId);
-      }
-    }
-
-    // Eliminar horario
-    async eliminarHorario(horarioId: string) {
-      try {
-        await this.horarioService.eliminarHorario(horarioId);
-        
-        // Actualizar la lista local
-        this.horarios = this.horarios.filter(h => h.id !== horarioId);
-        this.actualizarEventosCalendario();
-        
-        alert('Horario eliminado correctamente');
-      } catch (error) {
-        console.error('Error eliminando horario:', error);
-        alert('Error al eliminar el horario');
-      }
-    }
-    /*
-    async guardarHorario() {
-    if (!this.selectedProgId || !this.fecha || !this.horaInicio || !this.horaFin) {
-      alert("Completa todos los campos");
-      return;
-    }
-
-    const db = getFirestore();
-    const ref = collection(db, "horarios");
-
-    try{
-        await addDoc(ref, {
-        programadorId: this.selectedProgId,
-        fecha: this.fecha,
-        inicio: this.horaInicio,
-        fin: this.horaFin
-      });
-
-      this.horarios.push({
-        fecha: this.fecha,
-        fin: this.horaFin,
-        inicio: this.horaInicio,
-        programadorId: this.selectedProgId
-      })
-
-      this.actualizarEventosCalendario();
-
-      alert("Horario guardado correctamente");
-
-      this.fecha = "";
-      this.horaInicio = "";
-      this.horaFin = "";
-
-    }catch(error){
-      console.error("Error guardando horario:", error);
-      alert("Error guardando horario. Inténtalo de nuevo.");
-    } 
-  }
-    guardarHorario() {
-
-  if (!this.selectedProgId || !this.fecha || !this.horaInicio || !this.horaFin) {
-    alert("Completa todos los campos");
-    return;
-  }
-
-  const horario: Horario = {
-    programadorId: this.selectedProgId,
-    fecha: this.fecha,
-    inicio: this.horaInicio,
-    fin: this.horaFin
-  };
-
-  this.horarioService.guardarHorarioAPI(horario)
-  .subscribe({
-    next: ()=>{
-      alert("Horario guardado correctamente (API)");
-      this.onProgramadorSelected();
-      this.fecha="";
-      this.horaInicio="";
-      this.horaFin="";
-    },
-    error: ()=>{
-      alert("Error guardando horario");
-    }
-  });
-}*/
-
-
-  // ===============================
-  // CARGAR PROGRAMADORES (API)
-  // ===============================
-  cargarProgramadores() {
-    this.horarioService.getProgramadores().subscribe({
-      next: data => this.programadores = data,
-      error: err => alert(err.message)
     });
   }
 
-  // ===============================
-  // CUANDO SELECCIONA PROGRAMADOR
-  // ===============================
-  onProgramadorSelected() {
 
-    if (!this.selectedProgId) {
-      this.horarios = [];
-      this.calendarEvents = [];
-      this.actualizarCalendario();
-      return;
-    }
-
-    this.horarioService
-      .getHorarioByProgramadorAPI(this.selectedProgId)
-      .subscribe({
-        next: data => {
-          this.horarios = data;
-          this.actualizarEventosCalendario();
-        },
-        error: err => alert(err.message)
-      });
-  }
-
-  // ===============================
-  // GUARDAR HORARIO
-  // ===============================
   guardarHorario() {
-
+    console.log("Intentando guardar horario...");
+    console.log("Fecha:", this.fecha);
+    console.log("Hora Inicio:", this.horaInicio);
+    console.log("Hora Fin:", this.horaFin);
+    console.log("Modalidad:", this.modalidad);
     this.validarFormulario();
     if (!this.isFormValid) return;
 
-    const horario: Horario = {
-      programadorId: this.selectedProgId,
+    const nuevoHorario: Horario = {
+      programadorUid: this.uidProgramador,
       fecha: this.fecha,
       inicio: this.horaInicio,
-      fin: this.horaFin
+      fin: this.horaFin,
+      modalidad: this.modalidad
     };
-
-    this.horarioService.guardarHorarioAPI(horario)
-      .subscribe({
-        next: () => {
-          alert("Horario guardado");
-
-          this.onProgramadorSelected();
-
-          this.fecha = "";
-          this.horaInicio = "";
-          this.horaFin = "";
-        },
-        error: err => alert(err.message)
-      });
+    console.log("Guardando horario:", nuevoHorario);
+    this.loading = true;
+    this.horarioService.guardarHorarioAPI(nuevoHorario).subscribe({
+      next: () => {
+        alert("✅ Horario registrado con éxito");
+        this.limpiarFormulario();
+        this.cargarHorarios(); // Recargar lista
+      },
+      error: (err) => {
+        console.error(err);
+        alert("❌ Error al guardar. Intenta nuevamente.");
+        this.loading = false;
+      }
+    });
   }
 
-  // ===============================
-  // ELIMINAR
-  // ===============================
-  eliminarHorario(id: string) {
 
-    this.horarioService.eliminarHorarioAPI(id)
-      .subscribe({
-        next: () => {
-          alert("Eliminado");
-          this.onProgramadorSelected();
-        },
-        error: err => alert(err.message)
-      });
+  
+  eliminarHorario(idStr: string) {
+    const id = Number(idStr);
+    this.horarioService.eliminarHorarioAPI(id).subscribe({
+      next: () => {
+        this.horarios = this.horarios.filter(h => h.id !== id);
+        this.actualizarEventosCalendario();
+        console.log("Horario eliminado:", id);
+        alert("🗑️ Horario eliminado");
+        this.cargarHorarios();
+      },
+      error: err => alert("Error eliminando: " + err.message)
+    });
   }
 
   handleEventClick(info: any) {
@@ -320,35 +137,26 @@ import { RouterModule } from "@angular/router";
     }
   }
 
-  // ===============================
-  // CALENDARIO
-  // ===============================
   actualizarEventosCalendario() {
-
-    this.calendarEvents = this.horarios.map(h => ({
-      id: h.id,
-      title: `Disponible ${h.inicio}-${h.fin}`,
-      date: h.fecha
-    }));
-
+    this.calendarEvents = this.horarios.map(h => {
+      const color = h.modalidad === 'virtual' ? '#17a2b8' : '#28a745';
+      return {
+        id: h.id?.toString(),
+        title: `${h.inicio}-${h.fin} (${h.modalidad})`,
+        date: h.fecha,
+        backgroundColor: color,
+        borderColor: color
+      };
+    });
     this.actualizarCalendario();
   }
 
   actualizarCalendario() {
-
     this.calendarOptions = {
       ...this.calendarOptions,
       events: [...this.calendarEvents]
     };
-
     this.cdRef.detectChanges();
-  }
-
-
-  // Obtener nombre del programador seleccionado
-  getNombreProgramador(): string {
-    const programador = this.programadores.find(p => p.id === this.selectedProgId);
-    return programador ? (programador.displayName ? programador.displayName : 'Programador') : 'Programador';
   }
 
   getFechaMinima(): string {
@@ -362,18 +170,17 @@ import { RouterModule } from "@angular/router";
     return maxDate.toISOString().split('T')[0];
   }
 
-  // Validar el formulario completo
-  validarFormulario(): void {
+ validarFormulario(): void {
     this.mensajeError = '';
     
-    // Validar que todos los campos estén llenos
-    if (!this.fecha || !this.horaInicio || !this.horaFin) {
+    // 1. Validar campos vacíos
+    if (!this.fecha || !this.horaInicio || !this.horaFin || !this.modalidad) {
       this.mensajeError = '❌ Completa todos los campos';
       this.isFormValid = false;
       return;
     }
     
-    // Validar formato de fecha
+    // 2. Validar formato de fecha y hora (Regex)
     const fechaRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!fechaRegex.test(this.fecha)) {
       this.mensajeError = '❌ Formato de fecha inválido';
@@ -381,60 +188,38 @@ import { RouterModule } from "@angular/router";
       return;
     }
     
-    // Obtener la fecha actual (sin horas)
-    const hoy = new Date();
-    hoy.setDate(hoy.getDate()-1);
-    hoy.setHours(0, 0, 0, 0);
-    
-    // Convertir la fecha seleccionada a Date
-    const fechaSeleccionada = new Date(this.fecha);
-    
-    // Validar que no sea una fecha pasada
-    if (fechaSeleccionada < hoy) {
-      this.mensajeError = '❌ No puedes agendar en fechas pasadas';
+    if (!this.esHoraValida(this.horaInicio) || !this.esHoraValida(this.horaFin)) {
+      this.mensajeError = '❌ Formato de hora inválido';
       this.isFormValid = false;
       return;
     }
-    
-    // Validar formato de hora inicio
-    if (!this.esHoraValida(this.horaInicio)) {
-      this.mensajeError = '❌ Formato de hora inicio inválido (use HH:MM)';
+    const ahora = new Date(); // Fecha y hora actual exacta
+    const inicioSeleccionado = new Date(`${this.fecha}T${this.horaInicio}`);
+    const finSeleccionado = new Date(`${this.fecha}T${this.horaFin}`);
+
+    // Validar que la fecha/hora de inicio no sea anterior al momento actual
+    if (inicioSeleccionado < ahora) {
+      this.mensajeError = '❌ No puedes agendar en una fecha u hora pasada';
       this.isFormValid = false;
       return;
     }
-    
-    // Validar formato de hora fin
-    if (!this.esHoraValida(this.horaFin)) {
-      this.mensajeError = '❌ Formato de hora fin inválido (use HH:MM)';
-      this.isFormValid = false;
-      return;
-    }
-    
-    // Validar rango de hora inicio
-    if (!this.esHoraEnRango(this.horaInicio)) {
-      this.mensajeError = '⏰ La hora de inicio debe estar entre 7:00 y 19:00';
-      this.isFormValid = false;
-      return;
-    }
-    
-    // Validar rango de hora fin
-    if (!this.esHoraEnRango(this.horaFin)) {
-      this.mensajeError = '⏰ La hora de fin debe estar entre 7:00 y 19:00';
-      this.isFormValid = false;
-      return;
-    }
-    
-    // Validar que hora fin sea mayor que hora inicio
-    if (this.horaInicio >= this.horaFin) {
+
+    // 4. Validar que hora fin sea mayor que hora inicio
+    if (inicioSeleccionado >= finSeleccionado) {
       this.mensajeError = '⏰ La hora de fin debe ser posterior a la hora de inicio';
       this.isFormValid = false;
       return;
     }
+
+    // 5. Validar rangos de horario laboral (7am a 7pm)
+    if (!this.esHoraEnRango(this.horaInicio) || !this.esHoraEnRango(this.horaFin)) {
+      this.mensajeError = '⏰ El horario debe estar entre 7:00 y 19:00';
+      this.isFormValid = false;
+      return;
+    }
     
-    // Validar duración mínima (1 minutos)
-    const inicio = new Date(`2000-01-01T${this.horaInicio}`);
-    const fin = new Date(`2000-01-01T${this.horaFin}`);
-    const diferenciaMinutos = (fin.getTime() - inicio.getTime()) / (1000 * 1);
+    // 6. Validar duración mínima (1 minuto)
+    const diferenciaMinutos = (finSeleccionado.getTime() - inicioSeleccionado.getTime()) / 60000;
     
     if (diferenciaMinutos < 1) {
       this.mensajeError = '⏰ La duración mínima debe ser de 1 minuto';
@@ -492,6 +277,14 @@ import { RouterModule } from "@angular/router";
   onHoraFinChange(event: any) {
     this.horaFin = this.formatearHora(event.target.value);
     this.validarFormulario();
+  }
+
+  limpiarFormulario() {
+    this.fecha = "";
+    this.horaInicio = "";
+    this.horaFin = "";
+    this.modalidad = "";
+    this.isFormValid = false;
   }
   
 }

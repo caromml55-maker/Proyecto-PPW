@@ -5,6 +5,8 @@ import { getAuth } from "firebase/auth";
 import { getFirestore, doc, getDoc,updateDoc } from "firebase/firestore";
 import { RouterModule } from "@angular/router";
 import { ChangeDetectorRef } from '@angular/core';
+import { ProgramadorService } from '../../../services/programador.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-academic',
@@ -16,7 +18,7 @@ import { ChangeDetectorRef } from '@angular/core';
 export class Academic implements OnInit{
 
   data: any = {
-    name: '',
+    displayName: '',
     especialidad: '',
     descripcion: '',
     telefono: '',
@@ -31,15 +33,16 @@ export class Academic implements OnInit{
 
   isEditing = false;
   loading = false;
+  userUid: string | null = null;
 
-  constructor(private cdRef: ChangeDetectorRef) {}
+  constructor(private programadorService: ProgramadorService, private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit() {
     const auth = getAuth();
     const user = auth.currentUser;
     if (!user) return;
 
-    this.loading = true;
+   /* this.loading = true;
     const db = getFirestore();
     const ref = doc(db, 'users', user.uid);
     const snap = await getDoc(ref);
@@ -61,7 +64,34 @@ export class Academic implements OnInit{
       };
     }
     this.loading = false;
-    this.cdRef.detectChanges();
+    this.cdRef.detectChanges();*/
+    this.userUid = user.uid;
+    await this.cargarPerfil();
+  }
+
+  async cargarPerfil() {
+    this.loading = true;
+    try {
+      // Según (En Cyrva, 2026) usamos firstValueFrom para obtener los datos del backend
+      const prog = await firstValueFrom(this.programadorService.getProgramador(this.userUid!));
+
+      if (prog) {
+        // Mapeamos lo que viene del backend a la estructura de tu data
+        this.data = {
+          ...prog,
+          displayName: prog.displayName || prog.name || '',
+          redesSociales: {
+            github: prog.github || '',
+            linkedin: prog.linkedin || '',
+          }
+        };
+      }
+    } catch (error) {
+      console.error('Error cargando perfil desde el backend:', error);
+    } finally {
+      this.loading = false;
+      this.cdRef.detectChanges();
+    }
   }
 
   cancel(){
@@ -69,16 +99,44 @@ export class Academic implements OnInit{
     this.ngOnInit();
   }
 
-  async guardar() {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const db = getFirestore();
-    const ref = doc(db, 'users', user!.uid);
+  async guardar(form?: any) {
+    if (form && form.invalid) {
+      console.log("Formulario inválido");
+      return;
+    }
 
-    await updateDoc(ref, this.data);
+    this.loading = true;
+    try {
+      // Preparamos el objeto plano para el backend (sacando redes del objeto anidado)
+      const dataToSend = {
+        ...this.data,
+        github: this.data.redesSociales.github,
+        linkedin: this.data.redesSociales.linkedin,
+      };
+      delete dataToSend.redesSociales;
 
-    alert('Información actualizada');
-    this.isEditing = false;
-    this.cdRef.detectChanges();
+      // Actualizamos mediante el servicio
+      console.log('OBJETO FINAL ENVIADO:', dataToSend);
+      console.log('JSON ENVIADO:', JSON.stringify(dataToSend, null, 2));
+      await firstValueFrom(this.programadorService.actualizarUsuario(this.userUid!, dataToSend));
+
+      alert('Perfil actualizado correctamente en el servidor');
+      this.isEditing = false;
+    } catch (error) {
+      console.error('Error al guardar en el backend:', error);
+      alert('Error al actualizar el perfil');
+    } finally {
+      this.loading = false;
+      this.cdRef.detectChanges();
+    }
   }
+  soloLetras(field: string) {
+    this.data[field] = this.data[field].replace(/[^a-zA-Z áéíóúÁÉÍÓÚñÑ]/g, '');
+  }
+
+  soloNumeros(field: string) {
+    this.data[field] = this.data[field].replace(/[^0-9]/g, '');
+  }
+
+
 }

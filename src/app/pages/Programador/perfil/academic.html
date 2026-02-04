@@ -51,11 +51,11 @@
       <div class="form-group full-row">
         <label class="section-label">Redes Sociales</label>
 
-        <div class="social-inputs">
-          <input type="text" [(ngModel)]="data.redesSociales.github" aria-label="github" placeholder="gitHub URL" [disabled]="!isEditing" pattern="https?://.+" title="Debe ser una URL válida (http o https)">
-          <input type="text" [(ngModel)]="data.redesSociales.linkedin" aria-label="linkedin" placeholder="LinkedIn URL" [disabled]="!isEditing" pattern="https?://.+" title="Debe ser una URL válida (http o https)">
-          <input type="text" [(ngModel)]="data.redesSociales.portfolio" aria-label="portafolio" placeholder="Portafolio URL" [disabled]="!isEditing" >
-        </div>
+       <div class="social-inputs">
+          <input type="text" [(ngModel)]="data.redesSociales.github" aria-label="github" [disabled]="!isEditing" placeholder="https://github.com/..." pattern="https?://.+" #gitCtrl="ngModel">
+          <input type="text" [(ngModel)]="data.redesSociales.linkedin" aria-label="linkedin" [disabled]="!isEditing" placeholder="https://linkedin.com/..." pattern="https?://.+" #linkCtrl="ngModel">
+          <input type="text" [(ngModel)]="data.redesSociales.portfolio" aria-label="portafolio" [disabled]="!isEditing" placeholder="https://miweb.com" pattern="https?://.+">
+      </div>
       </div>
 
       <!-- DESCRIPCIÓN -->

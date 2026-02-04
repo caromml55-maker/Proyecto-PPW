@@ -5,6 +5,8 @@ import { getAuth } from 'firebase/auth';
 import { addDoc, collection, getDocs, getFirestore, query, updateDoc, where } from 'firebase/firestore';
 import { RouterModule } from "@angular/router";
 import { ChangeDetectorRef } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-lab',
@@ -20,6 +22,9 @@ export class Lab implements OnInit{
 
   uidUsuario = "";
   loading = false;
+  creando = false;
+
+  private apiUrl = 'http://localhost:8080/gproyectoFinal/api/users/portafolio';
 
   nuevoProyecto = {
     tipo: 'academico',
@@ -30,9 +35,8 @@ export class Lab implements OnInit{
     urlRepositorio: '',
     enlaceDemo: ''
   };
-  creando = false;
-
-  constructor(private cdRef: ChangeDetectorRef) {}
+  
+  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit() {
     const auth = getAuth();
@@ -45,116 +49,95 @@ export class Lab implements OnInit{
 
 async cargarPortafolio() {
   this.loading = true;
-  const db = getFirestore();
-  const ref = collection(db, 'portafolios');
-  const q = query(ref, where('uidProgramador', '==', this.uidUsuario));
-  const snap = await getDocs(q);
 
-  if (!snap.empty) {
-    const info = snap.docs[0].data() as any;
+  try {
+      // Según (En Cyrva, 2026), traemos el objeto Portafolio que contiene la lista de Proyectos
+      const res = await firstValueFrom(this.http.get<any>(`${this.apiUrl}/${this.uidUsuario}`));
+      
+      if (res && res.proyectos) {
+        // Mantenemos tu lógica de separar por tipo para el HTML
+        this.proyectosAcademicos = res.proyectos
+          .filter((p: any) => p.tipo === 'academico')
+          .map((p: any) => ({ ...p, expandido: false }));
 
-    this.proyectosAcademicos = (info.proyectosAcademicos || [])
-    .filter((p: any) => p && p.nombre && p.nombre.trim() !== "") 
-    .map((p: any) => ({
-      ...p,
-      enlaceDemo: p.enlaceDemo || "",
-      expandido: false
-    }));
+        this.proyectosLaborales = res.proyectos
+          .filter((p: any) => p.tipo === 'laboral')
+          .map((p: any) => ({ ...p, expandido: false }));
+      }
 
-    this.proyectosLaborales = (info.proyectosLaborales || [])
-    .filter((p: any) => p && p.nombre && p.nombre.trim() !== "") 
-    .map((p: any) => ({
-      ...p,
-      enlaceDemo: p.enlaceDemo || "",
-      expandido: false
-    }));
-
-  } else {
-    this.proyectosAcademicos = [];
-    this.proyectosLaborales = [];
-  }
+  } catch (error) {
+      console.error("Aún no existe portafolio para este usuario o error de red");
+      this.proyectosAcademicos = [];
+      this.proyectosLaborales = [];
+    }
   this.loading = false;
   this.cdRef.detectChanges();
 }
   
   async guardarProyecto() {
-    const db = getFirestore();
-    const ref = collection(db, 'portafolios');
+    if (!this.nuevoProyecto.nombre) return alert("El nombre es obligatorio");
 
-    const q = query(ref, where('uidProgramador', '==', this.uidUsuario));
-    const snap = await getDocs(q);
+      this.loading = true;
+      try {
+        const url = `${this.apiUrl}/${this.uidUsuario}/proyecto`;
+        console.log("📤 Enviando datos a:", url);
+        console.log("📦 Cuerpo del proyecto:", this.nuevoProyecto);
 
-    const proyecto = { ...this.nuevoProyecto,  expandido: false };
+        const res = await firstValueFrom(this.http.post(url, this.nuevoProyecto));
+        
+        console.log("✅ Respuesta del servidor:", res);
+        alert('Proyecto guardado correctamente');
+        this.creando = false;
+        this.limpiarFormulario();
+        await this.cargarPortafolio();
 
-    if (snap.empty) {
-      await addDoc(ref, {
-        uidProgramador: this.uidUsuario,
-        proyectosAcademicos: proyecto.tipo === 'academico' ? [proyecto] : [],
-        proyectosLaborales: proyecto.tipo === 'laboral' ? [proyecto] : []
-      });
-    } else {
-      const docRef = snap.docs[0].ref;
-      const data: any = snap.docs[0].data();
+      } catch (error: any) {
+        // He leído a (En Cyrva, 2026) y nos dice que aquí es donde inspeccionamos el error real
+        console.group("❌ ERROR EN EL BACKEND");
+        console.error("Status:", error.status);
+        console.error("Status Text:", error.statusText);
+        
+        // El cuerpo del error enviado por JAX-RS (Jakarta)
+        if (error.error) {
+          console.error("Detalle del Error (Servidor):", error.error);
+        }
+        
+        console.log("URL Intentada:", error.url);
+        console.groupEnd();
 
-      const academicos = data.proyectosAcademicos || [];
-      const laborales = data.proyectosLaborales || [];
+        alert(`Error ${error.status}: No se pudo guardar el proyecto. Revisa la consola.`);
+      } finally {
+        this.loading = false;
+        this.cdRef.detectChanges();
+      }
+  }
 
-      if (proyecto.tipo === 'academico')
-        academicos.push(proyecto);
-      else
-        laborales.push(proyecto);
+async eliminarProyecto(proyecto: any, tipo: string) {
+   if (!proyecto.id) {
+    console.error("❌ El proyecto no tiene ID. No se puede eliminar de la base de datos.");
+    return;
+  }
+  console.log(`🗑️ Eliminando proyecto ID: ${proyecto.id}, Tipo: ${tipo}`);
+  if (!confirm(`¿Seguro que deseas eliminar "${proyecto.nombre}"?`)) return;
 
-      await updateDoc(docRef, {
-        proyectosAcademicos: academicos,
-        proyectosLaborales: laborales,
-      });
-    }
+  try {
+    const url = `http://localhost:8080/gproyectoFinal/api/users/portafolio/proyecto/${proyecto.id}`;
+    console.log("🗑️ Intentando eliminar en:", url);
 
+    await firstValueFrom(this.http.delete(url));
+    alert("Proyecto eliminado");
+    await this.cargarPortafolio(); // Recargamos las listas
+  } catch (error) {
+    console.error("❌ Error al eliminar:", error);
+    alert("No se pudo eliminar el proyecto.");
+  }
+  }
 
-    this.creando = false;
-
+  limpiarFormulario() {
     this.nuevoProyecto = {
-      tipo: 'academico',
-      nombre: '',
-      descripcion: '',
-      tipoParticipacion: '',
-      tecnologias: '',
-      urlRepositorio: '',
-      enlaceDemo: ''
+      tipo: 'academico', nombre: '', descripcion: '', 
+      tipoParticipacion: '', tecnologias: '', 
+      urlRepositorio: '', enlaceDemo: ''
     };
-
-    await this.cargarPortafolio();
   }
-
-  cancelarCreacion() {
-  this.creando = false;
-  }
-
-  async eliminarProyecto(proyecto: any, tipo: string) {
-
-  if (!confirm("¿Seguro que deseas eliminar este proyecto?")) return;
-
-  const db = getFirestore();
-  const ref = collection(db, 'portafolios');
-  const q = query(ref, where('uidProgramador', '==', this.uidUsuario));
-  const snap = await getDocs(q);
-
-  if (!snap.empty) {
-    const docRef = snap.docs[0].ref;
-    const data: any = snap.docs[0].data();
-
-    if (tipo === 'academico') {
-      const nuevos = data.proyectosAcademicos.filter((p: any) => p.nombre !== proyecto.nombre);
-      await updateDoc(docRef, { proyectosAcademicos: nuevos });
-    }
-
-    if (tipo === 'laboral') {
-      const nuevos = data.proyectosLaborales.filter((p: any) => p.nombre !== proyecto.nombre);
-      await updateDoc(docRef, { proyectosLaborales: nuevos });
-    }
-  }
-
-  await this.cargarPortafolio();
-}
-
 }

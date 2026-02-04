@@ -10,45 +10,44 @@
 
   <div class="admin-content container">
 
-    <div class="selector-container">
-
-      <!-- SELECTOR DE PROGRAMADOR -->
-      <label for="selectorProg">Seleccionar programador:</label>
-      <select id="selectorProg" [(ngModel)]="selectedProgId" (change)="onProgramadorSelected()" class="form-select">
-        <option value="">-- Selecciona --</option>
-        @for(p of programadores; track p.id){
-          <option [value]="p.id">{{ p.name }} ({{ p.email }})</option>
-        }
-      </select>
-
-    </div>
-
     <br><br>
 
-    <div class="form-grid" *ngIf="selectedProgId">
-      <label>Fecha:</label>
-      <input type="date" [(ngModel)]="fecha" aria-label="Seleccionar fecha disponible" [min]="getFechaMinima()" [max]="getFechaMaxima()" (change)="validarFormulario()">
+    <div class="car-panel">
+      <h2>Agregar nuevo horario</h2>
+        <div class="form-grid">
+          <label>Fecha:</label>
+          <input type="date" class="form-control" [(ngModel)]="fecha" aria-label="Seleccionar fecha disponible" [min]="getFechaMinima()" [max]="getFechaMaxima()" (change)="validarFormulario()">
 
-      <label>Hora inicio:</label>
-      <input type="time" [(ngModel)]="horaInicio" aria-label="Hora de inicio" (change)="onHoraInicioChange($event)" (change)="validarFormulario()">
+          <label>Hora inicio:</label>
+          <input type="time" class="form-control" [(ngModel)]="horaInicio" aria-label="Hora de inicio" (change)="onHoraInicioChange($event)" (change)="validarFormulario()">
 
-      <label>Hora fin:</label>
-      <input type="time" [(ngModel)]="horaFin" aria-label="Hora de fin" (change)="onHoraFinChange($event)" (change)="validarFormulario()">
+          <label>Hora fin:</label>
+          <input type="time" class="form-control" [(ngModel)]="horaFin" aria-label="Hora de fin" (change)="onHoraFinChange($event)" (change)="validarFormulario()">
 
-      <!-- Mensaje de error -->
-      <div *ngIf="mensajeError" class="error-message">
-        {{ mensajeError }}
-      </div>
+          <div>
+                <label>Modalidad:</label>
+                <select [(ngModel)]="modalidad" class="form-select" [class.is-invalid]="!modalidad && fecha" (change)="validarFormulario()">
+                    <option value="" disabled selected>-- Selecciona --</option>
+                    <option value="virtual">💻 Virtual</option>
+                    <option value="presencial">🏢 Presencial</option>
+                </select>
+            </div>
 
-      <div class="action-buttons">
-        <button class="btn btn-success" (click)="guardarHorario()" aria-label="Guardar horario" [disabled]="!isFormValid">💾 Guardar horario</button>
+          <!-- Mensaje de error -->
+          <div *ngIf="mensajeError" class="error-message">
+            {{ mensajeError }}
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-success" (click)="guardarHorario()" aria-label="Guardar horario" [disabled]="!isFormValid">💾 Guardar horario</button>
+          </div>
       </div>
     </div>
     
    <!-- Información de horarios -->
-  <div class="calendar-section" *ngIf="selectedProgId">
-    <h2>Calendario de {{ getNombreProgramador() }}</h2>
-    
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Calendario </h2>
+    <span class="badge bg-info" *ngIf="horarios.length > 0">{{ horarios.length }} horarios activos</span>
     <div class="alert alert-info" *ngIf="horarios.length > 0">
       📅 {{ horarios.length }} horario(s) registrado(s) - 
       <small>Haz clic en un evento para eliminarlo</small>
@@ -62,11 +61,6 @@
       <full-calendar [options]="calendarOptions"></full-calendar>
     </div>
   </div>
-
-    <!-- Mensaje cuando no hay programador seleccionado -->
-    <div *ngIf="!selectedProgId" class="alert alert-info">
-       Selecciona un programador para gestionar sus horarios
-    </div>
 
 
   </div>

@@ -4,6 +4,8 @@ import { getAuth } from 'firebase/auth';
 import { addDoc, collection, doc, getDocs, getFirestore, updateDoc } from 'firebase/firestore';
 import { RouterLink, RouterOutlet } from "@angular/router";
 import { ChangeDetectorRef } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-asesoria',
@@ -18,77 +20,98 @@ export class Asesoria implements OnInit {
   uidProgramador = "";
   loading = false;
 
-  constructor(private cdRef: ChangeDetectorRef) {}
+  private apiUrl = 'http://localhost:8080/gproyectoFinal/api/asesoria';
+  private apiNotificaciones = 'http://localhost:8080/gproyectoFinal/api/notifications';
+
+  constructor(private http: HttpClient, private cdRef: ChangeDetectorRef) {}
 
   async ngOnInit() {
     this.loading = true;
     const auth = getAuth();
     this.uidProgramador = auth.currentUser?.uid || "";
 
-    const db = getFirestore();
+    if (!this.uidProgramador) {
+      console.error("No hay un programador autenticado.");
+      this.loading = false;
+      return;
+    }
 
-    // 👉 1. obtenemos asesorías
-    const snapA = await getDocs(collection(db, "asesorias"));
+    await this.cargarAsesorias();
+  }
 
-    let asesorias = snapA.docs
-      .map((d: any) => ({ id: d.id, ...d.data() as any }))
-      .filter((a: any) =>
-        a.programadorId === this.uidProgramador &&
-        a.estado === "pendiente"
-      );
+async cargarAsesorias() {
+    this.loading = true;
+    try {
+      const url = `${this.apiUrl}/programador/${this.uidProgramador}/pendientes`;
+      const data = await firstValueFrom(this.http.get<any[]>(url));
 
-    // 👉 2. obtenemos usuarios
-    const snapUsers = await getDocs(collection(db, "users"));
-    const users = snapUsers.docs.map((d: any) => ({
-      id: d.id,
-      ...d.data() as any
-    }));
-
-    // 👉 3. combinamos usuario + asesoría
-    this.pendientes = asesorias.map((a: any) => {
-      const u = users.find((x: any) => x.uid === a.usuarioId);
-
-      return {
+      this.pendientes = data.map((a: any) => ({
         ...a,
-        usuarioNombre: u?.displayName || u?.name || u?.nombre || "Usuario desconocido",
-        fecha: a.fechaHora?.substring(0, 10) || "",
-        hora: a.fechaHora?.substring(11, 16) || ""
-      };
-    });
-    this.loading = false;
-    this.cdRef.detectChanges();
+        usuarioNombre: a.usuario?.nombre || a.usuario?.displayName || "Usuario desconocido",
+        fecha: a.fechaHora ? a.fechaHora.substring(0, 10) : "",
+        hora: a.fechaHora ? a.fechaHora.substring(11, 16) : ""
+      }));
+
+    } catch (error) {
+      console.error("Error al obtener asesorías del backend:", error);
+      this.pendientes = [];
+    } finally {
+      this.loading = false;
+      this.cdRef.detectChanges();
+    }
   }
 
-
-  async responder(a: any, nuevaRespuesta: string) {
-    const db = getFirestore();
-    const ref = doc(db, "asesorias", a.id);
-
-    await updateDoc(ref, {
+  async responder(asesoria: any, nuevaRespuesta: string) {
+    this.loading = true;
+    
+    const bodyUpdate = {
+     // ...asesoria,
       estado: nuevaRespuesta,
-      respuesta: nuevaRespuesta === "aceptada"
-          ? "El programador ha aceptado tu asesoría"
-          : "El programador ha rechazado tu asesoría "
-    });
+      //respuesta: nuevaRespuesta === "aceptada"
+       //  ? "El programador ha aceptado tu asesoría"
+        //: "El programador ha rechazado tu asesoría"
+    };
 
-      await addDoc(collection(db, "notifications"), {
-        usuarioId: a.usuarioId,
-        mensaje: nuevaRespuesta === "aceptada"
-          ? `✔️ Tu asesoría fue aceptada por ${this.getProgramadorNombre()}`
-          : `❌ Tu asesoría fue rechazada por ${this.getProgramadorNombre()}`,
-        fechaHora: new Date().toISOString(),
-        leido: false
-      });
+    try {
+      //const urlUpdate = `${this.apiUrl}/${asesoria.id}`;
+      const urlUpdate = `${this.apiUrl}/${asesoria.id}/responder`;
+      await firstValueFrom(this.http.put(urlUpdate, bodyUpdate));
 
+      //await this.enviarNotificacionAlBackend(asesoria, nuevaRespuesta);
 
-    alert("Respuesta enviada");
+      alert(`Asesoría ${nuevaRespuesta} con éxito`);
+      
+      // 3. Recargamos la lista para limpiar la vista
+      await this.cargarAsesorias();
 
-    this.ngOnInit();
+    } catch (error: any) {
+      console.error("❌ Error en la operación:", error);
+      alert("No se pudo procesar la respuesta. Verifica la consola.");
+    } finally {
+      this.loading = false;
+      this.cdRef.detectChanges();
+    }
   }
+
+  private async enviarNotificacionAlBackend(asesoria: any, estado: string) {
+    const payload = {
+      usuarioId: asesoria.usuario?.uid || asesoria.usuarioId,
+      mensaje: estado === "aceptada"
+        ? `✔️ Tu asesoría fue aceptada por ${this.getProgramadorNombre()}`
+        : `❌ Tu asesoría fue rechazada por ${this.getProgramadorNombre()}`,
+      fechaHora: new Date().toISOString(),
+      leido: false
+    };
+
+    try {
+      await firstValueFrom(this.http.post(this.apiNotificaciones, payload));
+    } catch (e) {
+      console.warn("⚠️ Notificación no enviada (revisa si el endpoint existe):", e);
+    }
+  }
+
   getProgramadorNombre():string {
   const auth = getAuth();
   return auth.currentUser?.displayName || "Programador";
 }
-
-
 }

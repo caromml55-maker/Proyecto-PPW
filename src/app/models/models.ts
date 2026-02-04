@@ -7,11 +7,12 @@ export interface Notification {
 }
 
 export interface Horario {
-  idHorario: string;
+  id?: number; 
+  programadorUid: string; 
   fecha: string;
   inicio: string;
   fin: string;
-  programadorId: string;
+  modalidad: string; 
 }
 
 export interface Portafolio {
