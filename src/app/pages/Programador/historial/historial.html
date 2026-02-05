@@ -1,0 +1,157 @@
+<div class="container-fluid">
+
+  <header class="admin-header" role="banner">
+    <div class="header-content">
+      <h1>Mi Historial y Reportes</h1>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="goToInicio()" aria-label="Ir al inicio">Inicio</button>
+      </div>
+    </div>
+  </header>
+
+  <div *ngIf="!usuarioLogueado" class="text-center py-5 text-muted opacity-50">
+    <div class="spinner-border text-primary mb-3" role="status"></div>
+    <p>Cargando tu información...</p>
+  </div>
+
+  <div *ngIf="usuarioLogueado" class="animate__animated animate__fadeIn">
+
+    <div class="row mb-4">
+      <div class="col-md-4 mb-3">
+        <div class="card h-100 card-kpi py-3 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="text-xs fw-bold text-primary text-uppercase mb-1">Total Asesorías</div>
+            <div class="h2 fw-bold">{{ totalAsesorias }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card h-100 card-kpi py-3 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="text-xs fw-bold text-success text-uppercase mb-1">Tasa Aceptación</div>
+            <div class="h2 fw-bold">{{ tasaAceptacion }}%</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card h-100 card-kpi py-3 border-0 shadow-sm">
+          <div class="card-body">
+            <div class="text-xs fw-bold text-info text-uppercase mb-1">Mis Proyectos</div>
+            <div class="h2 fw-bold">{{ totalProyectos }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-white py-3">
+            <h6 class="m-0 fw-bold text-dark"><i class="bi bi-calendar-check me-2 text-primary"></i>Mis Asesorías Recientes</h6>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+              <table class="table align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of dataAsesorias">
+                    <td class="text-muted small">{{ item.fecha || '---' }}</td>
+                    <td class="fw-bold">{{ item.usuarioNombre || 'Anónimo' }}</td>
+                    <td>
+                      <span class="badge rounded-pill" 
+                        [ngClass]="{
+                          'bg-success-subtle text-success': item.estado?.toLowerCase() === 'aceptada',
+                          'bg-warning-subtle text-warning': item.estado?.toLowerCase() === 'pendiente',
+                          'bg-danger-subtle text-danger': item.estado?.toLowerCase() === 'rechazada'
+                        }">
+                        {{ item.estado }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="dataAsesorias.length === 0">
+                    <td colspan="3" class="text-center py-4 text-muted small">No tienes asesorías registradas</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-white py-3">
+            <h6 class="m-0 fw-bold text-dark"><i class="bi bi-folder2-open me-2 text-success"></i>Mis Proyectos Activos</h6>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive" style="max-height: 350px;">
+              <table class="table align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Tipo</th>
+                    <th>Nombre del Proyecto</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let proj of dataProyectos">
+                    <td><span class="badge bg-light text-dark border">{{ proj.tipo }}</span></td>
+                    <td class="fw-bold">{{ proj.nombreProyecto }}</td>
+                    <td><span class="badge bg-info-subtle text-info">Activo</span></td>
+                  </tr>
+                  <tr *ngIf="dataProyectos.length === 0">
+                    <td colspan="3" class="text-center py-4 text-muted small">Aún no tienes proyectos asignados</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-white">
+            <h6 class="text-primary fw-bold m-0">Estado de mis Solicitudes</h6>
+          </div>
+          <div class="card-body">
+            <div style="height: 300px;">
+              <canvas baseChart [data]="barChartData" [options]="barChartOptions" type="bar"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-header bg-white">
+            <h6 class="text-primary fw-bold m-0">Distribución por Tipo</h6>
+          </div>
+          <div class="card-body">
+            <div style="height: 300px;">
+              <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" type="doughnut"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-3 mb-5 justify-content-center">
+      <button (click)="descargarPDF()" class="btn-minimal btn-celeste">
+        <i class="bi bi-file-earmark-pdf-fill"></i> Exportar PDF
+      </button>
+
+      <button (click)="descargarExcel()" class="btn-minimal btn-verde">
+        <i class="bi bi-file-earmark-excel-fill"></i> Exportar Excel
+      </button>
+    </div>
+
+  </div>
+</div>

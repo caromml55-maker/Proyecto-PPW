@@ -41,30 +41,6 @@ export class Academic implements OnInit{
     const auth = getAuth();
     const user = auth.currentUser;
     if (!user) return;
-
-   /* this.loading = true;
-    const db = getFirestore();
-    const ref = doc(db, 'users', user.uid);
-    const snap = await getDoc(ref);
-
-    if (snap.exists()) {
-      const userData = snap.data();
-      this.data = {
-        displayName: userData['name'] || userData['displayName'] || '',
-        especialidad: userData['especialidad'] || '',
-        descripcion: userData['descripcion'] || '',
-        telefono:  userData['telefono'] || '',
-        email: userData['email'] || '',
-        photoURL: userData['photoURL'] || '',
-        redesSociales: {
-          github: userData['redesSociales']?.github|| '',
-          linkedin: userData['redesSociales']?.linkedin || '',
-          portfolio: userData['redesSociales']?.portfolio || ''
-        }
-      };
-    }
-    this.loading = false;
-    this.cdRef.detectChanges();*/
     this.userUid = user.uid;
     await this.cargarPerfil();
   }

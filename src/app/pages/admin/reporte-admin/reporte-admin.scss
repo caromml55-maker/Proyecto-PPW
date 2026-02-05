@@ -1,0 +1,383 @@
+// --- VARIABLES DE DISEÑO MINIMALISTA ---
+$bg-app: #f3f5f9;       // Fondo gris muy suave para la app
+$bg-card: #ffffff;      // Blanco puro para las tarjetas
+$text-primary: #2c3e50; // Azul oscuro casi negro para títulos
+$text-secondary: #7f8c8d;// Gris para subtítulos
+$brand-color: #4e73df;  // Azul principal
+$border-radius: 8px;   // Bordes redondeados modernos
+$shadow-soft: 0 5px 15px rgba(0, 0, 0, 0.05); // Sombra muy sutil
+
+// --- 1. CONTENEDOR PRINCIPAL ---
+.admin-header {
+  background: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    h1 { margin: 0; font-size: 1.6rem; color: #2c3e50; }
+  }
+  .header-actions { display: flex; gap: 10px; }
+}
+.btn-secondary { background-color: #6c757d; }
+:host {
+  display: block;
+  background-color: $bg-app;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  min-height: 100vh;
+  color: $text-primary;
+}
+
+// Variables
+// --- VARIABLES ---
+$btn-red: #e74a3b; 
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  color: white;
+  transition: transform 0.1s, box-shadow 0.2s;
+  
+  &:active { transform: scale(0.98); }
+}
+
+// --- BOTÓN VOLVER MINIMALISTA ---
+.btn-minimal-red {
+  // Diseño base
+  background-color: $btn-red;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  
+  // Tamaño y espaciado
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  
+  // Comportamiento Flex para alinear icono y texto
+  display: inline-flex;
+  align-items: center;
+  gap: 8px; // Espacio garantizado entre flecha y texto
+  
+  // Quitar subrayado
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  // Efecto Hover
+  &:hover {
+    background-color: rgb(247, 199, 209); // Se oscurece un poco
+    transform: translateY(-2px); // Sube un poquito
+    box-shadow: 0 4px 8px rgba(231, 74, 59, 0.25); // Sombra roja suave
+    color: white; // Asegura que el texto siga blanco
+  }
+
+  // Ajuste del icono
+  i {
+    font-size: 1rem;
+    line-height: 0; // Evita que el icono descuadre la altura
+  }
+}
+// Asegura que el contenedor tenga padding
+.container-fluid {
+  padding: 2rem !important;
+}
+
+// --- 2. TARJETAS (CARDS) - LA CLAVE DEL ORDEN ---
+.card {
+  background-color: $bg-card;
+  border: none; // Sin bordes negros
+  border-radius: $border-radius;
+  box-shadow: $shadow-soft; // Sombra suave para dar profundidad
+  margin-bottom: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  .card-header {
+    background-color: transparent;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1.25rem 1.5rem;
+    
+    h6 {
+      margin: 0;
+      font-weight: 700;
+      color: $brand-color;
+      letter-spacing: 0.5px;
+    }
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  // Efecto sutil al pasar el mouse por encima
+  &:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/// --- 3. ESTILOS DE TABLA (LIMPIOS) ---
+.table-responsive {
+  border-radius: $border-radius;
+  overflow: auto; // <--- CAMBIO IMPORTANTE: antes decía 'hidden'
+  /* Opcional: Si quieres un scroll suave si la tabla es muy ancha */
+  -webkit-overflow-scrolling: touch; 
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+
+  thead {
+    background-color: #f8f9fc; // Encabezado gris muy claro
+    
+    th {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8898aa;
+      font-weight: 700;
+      border: none;
+      padding: 1rem;
+    }
+  }
+
+  tbody {
+    tr {
+      border-bottom: 1px solid #f1f1f1;
+      transition: background-color 0.2s;
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      &:hover {
+        background-color: #fafbfc; // Hover muy sutil en filas
+      }
+    }
+
+    td {
+      padding: 1rem;
+      vertical-align: middle;
+      font-size: 0.9rem;
+      color: #5a5c69;
+    }
+  }
+}
+
+// --- 4. BADGES (ETIQUETAS DE ESTADO) ---
+// Estilo "Pill" moderno con colores pastel
+.badge {
+  padding: 0.5em 1em;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  
+  &.bg-success-subtle { background-color: #d1e7dd; color: #0f5132; }
+  &.bg-warning-subtle { background-color: #fff3cd; color: #664d03; }
+  &.bg-danger-subtle  { background-color: #f8d7da; color: #842029; }
+  &.bg-info-subtle    { background-color: #cff4fc; color: #055160; }
+  
+  // Fallback si no usas las clases subtle
+  &.bg-info { background-color: #36b9cc; color: white; }
+}
+
+// --- 5. BOTÓN VOLVER Y HEADER ---
+.header-title {
+  h3 { font-weight: 800; color: $text-primary; }
+  p { color: $text-secondary; }
+}
+
+.btn-volver {
+  background: white;
+  border: 1px solid #e3e6f0;
+  color: $text-secondary;
+  border-radius: 50px; // Botón redondo
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+  text-decoration: none; // Quitar subrayado del link
+
+  &:hover {
+    background-color: $brand-color;
+    color: white;
+    border-color: $brand-color;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(78, 115, 223, 0.3);
+  }
+}
+
+
+
+// --- 7. KPIS (TARJETAS DE NÚMEROS) ---
+.card-kpi {
+  text-align: center;
+  .h2 { font-size: 2.5rem; margin-bottom: 0; color: $text-primary; }
+  .text-xs { letter-spacing: 1px; opacity: 0.8; }
+}
+// --- ESTILO DEL SELECTOR DE PROGRAMADORES ---
+.custom-combobox {
+  position: relative;
+  width: 100%;
+
+  // 1. EL CAMPO PRINCIPAL (Donde haces clic para abrir)
+  .form-control {
+    height: 50px; // Un poco más alto para elegancia
+    background-color: #ffffff;
+    border: 1px solid #d1d3e2;
+    border-radius: $border-radius;
+    padding: 0 1.25rem; // Espacio lateral interno
+    font-size: 0.95rem;
+    box-shadow: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: rgb(160, 229, 231);
+    }
+    
+    // Al abrir el menú
+    .active & {
+      border-color: $brand-color;
+      box-shadow: 0 0 0 3px rgba($brand-color, 0.15);
+    }
+  }
+
+  // 2. LA CAJA FLOTANTE (DROPDOWN)
+  .combobox-dropdown {
+    border: none;
+    border-radius: $border-radius;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.12); // Sombra difuminada fuerte
+    margin-top: 10px; // Separación del input principal
+    background: white;
+    padding-top: 8px; // Espacio antes del buscador
+    padding-bottom: 8px; // Espacio al final de la lista
+  }
+
+  // 3. INPUT DE BÚSQUEDA INTERNO
+  // Apuntamos al contenedor del input (el div con clase p-2)
+  .p-2.border-bottom {
+    padding: 0.5rem 1rem !important; // Override de bootstrap
+    border-bottom: none !important; // Quitamos la línea fea pegada
+  }
+
+  input[type="text"] {
+    background-color: #f3f5f9; // Fondo gris suave tipo "cápsula"
+    border-radius: 6px;
+    border: 1px solid transparent;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+    
+    &:focus {
+      background-color: white;
+      border-color: $brand-color;
+      box-shadow: 0 0 0 3px rgba($brand-color, 0.1);
+    }
+  }
+
+  // 4. CONTENEDOR DE LA LISTA (SCROLL)
+  div[style*="max-height"] {
+    margin-top: 5px; // Espacio entre el buscador y el primer nombre
+    padding-right: 5px; // Espacio para que el scroll no tape texto
+
+    // Scrollbar fina y moderna
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background-color: #e3e6f0;
+      border-radius: 10px;
+      &:hover { background-color: #d1d3e2; }
+    }
+  }
+
+  // 5. ITEMS INDIVIDUALES (Los programadores)
+  // Apuntamos a los divs dentro del ngFor
+  div[class*="border-bottom"] {
+    padding: 0.8rem 1.5rem !important; // MUCHO MÁS ESPACIO INTERNO
+    border-bottom: 1px solid #f8f9fc !important; // Línea separadora muy sutil
+    transition: all 0.2s ease;
+    
+    // Efecto Hover
+    &:hover {
+      background-color: #f0f4ff !important; // Azul muy clarito
+      padding-left: 1.8rem !important; // Pequeño desplazamiento a la derecha
+      color: $brand-color;
+    }
+
+    &:last-child {
+      border-bottom: none !important;
+    }
+  }
+}
+
+// --- VARIABLES DE COLOR ---
+$color-celeste: #38b6ff;  // Un celeste vivo y moderno
+$color-verde: #00d2d3;    // Un verde menta/turquesa limpio (o usa #2ecc71 para verde clásico)
+// Si prefieres un verde más "Excel":
+$color-verde-excel: #20bf6b; 
+
+// --- CLASE BASE MINIMALISTA ---
+.btn-minimal {
+  border: none;
+  border-radius: 10px;        // Completamente redondeado (Pill)
+  padding: 0.5rem 1.5rem;     // Espacio interno cómodo
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: white;               // Texto blanco para contraste limpio
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;                   // Espacio entre ícono y texto
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); // Animación suave
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); // Sombra muy sutil inicial
+
+  // Efecto al pasar el mouse (Elevación)
+  &:hover {
+    transform: translateY(-3px); // Sube ligeramente
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); // La sombra crece
+    color: white; // Mantiene el texto blanco
+  }
+
+  // Efecto al hacer clic
+  &:active {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  i {
+    font-size: 1.1em; // Ícono ligeramente más grande
+  }
+}
+
+// --- VARIANTES DE COLOR ---
+
+// Opción 1: Botón Celeste (Para PDF)
+.btn-celeste {
+  background-color: $color-celeste;
+  // Opcional: Un degradado muy sutil para hacerlo más "premium"
+  background: linear-gradient(135deg, #4fc3f7 0%, #29b6f6 100%); 
+  
+  &:hover {
+    // Brillo al hover
+    background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+  }
+}
+
+// Opción 2: Botón Verde Bonito (Para Excel)
+.btn-verde {
+  background-color: $color-verde-excel;
+  // Degradado sutil verde
+  background: linear-gradient(135deg, #2ecc71 0%, #26af61 100%);
+
+  &:hover {
+    background: linear-gradient(135deg, #55efc4 0%, #00b894 100%);
+  }
+}

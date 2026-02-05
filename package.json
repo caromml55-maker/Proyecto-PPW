@@ -24,6 +24,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/cdk": "^21.1.2",
     "@angular/common": "^20.3.13",
     "@angular/compiler": "20.3.13",
     "@angular/core": "^20.3.13",
@@ -38,16 +39,23 @@
     "@fullcalendar/daygrid": "^6.1.19",
     "@fullcalendar/interaction": "^6.1.19",
     "@fullcalendar/timegrid": "^6.1.19",
+    "chart.js": "^4.5.1",
     "express": "^5.1.0",
+    "file-saver": "^2.0.5",
     "firebase": "^12.6.0",
+    "jspdf": "^4.1.0",
+    "jspdf-autotable": "^5.0.7",
+    "ng2-charts": "^8.0.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@angular/build": "^20.3.9",
     "@angular/cli": "^20.3.9",
     "@angular/compiler-cli": "20.3.13",
     "@types/express": "^5.0.1",
+    "@types/file-saver": "^2.0.7",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^20.17.19",
     "jasmine-core": "~5.9.0",

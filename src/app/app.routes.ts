@@ -13,6 +13,8 @@ import { Lab } from './pages/Programador/lab/lab';
 import { Academic } from './pages/Programador/perfil/academic';
 import { Asesoria } from './pages/Programador/asesoria/asesoria';
 import { Unauthorized } from './pages/unauthorized/unauthorized';
+import { ReporteAdmin } from './pages/admin/reporte-admin/reporte-admin';
+import { Historial } from './pages/Programador/historial/historial';
 
 export const routes: Routes = [
     {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -32,6 +34,8 @@ export const routes: Routes = [
     {path: 'program/lab', component: Lab},
     {path: 'program/asesoria', component: Asesoria},
     {path: 'programmer1',component: Program},
+    {path: 'admin/reportes', component: ReporteAdmin },
+    {path: 'historial', component: Historial},
 ];
 
 
